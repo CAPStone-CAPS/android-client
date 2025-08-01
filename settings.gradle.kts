@@ -10,7 +10,14 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    plugins {
+        id("org.jetbrains.kotlin.jvm") version "2.0.0"
+        id("org.jetbrains.kotlin.android") version "2.0.0"
+        id("org.jetbrains.kotlin.plugin.compose") version "1.5.11" // ✅ 추가
+    }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -19,5 +26,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Application"
+rootProject.name = "capstone_2"
 include(":app")
