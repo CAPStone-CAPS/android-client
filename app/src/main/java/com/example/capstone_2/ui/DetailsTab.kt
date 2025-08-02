@@ -90,7 +90,14 @@ fun DetailsScreen(
             )
 
             MergedUsageGrid(
-                timeBlocks = timeGrid,
+                appUsageBlocks = appUsageInfoList.map {
+                    AppTimeBlock(
+                        appName = it.appName,
+                        usageBlocks = BooleanArray(144) { i ->
+                            timeGrid.getOrNull(i)?.contains(it.appName) == true
+                        }.toList()
+                    )
+                },
                 colorMap = colorMap,
                 modifier = Modifier
                     .weight(1.2f)
