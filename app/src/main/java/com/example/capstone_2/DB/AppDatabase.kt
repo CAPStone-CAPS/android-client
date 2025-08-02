@@ -7,9 +7,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [UsageSessionEntity::class], version = 1)
+@Database(entities = [UsageSessionEntity::class, MemoEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usageSessionDao(): UsageSessionDao
+    abstract fun memoDao(): MemoDao
 
     companion object {
         @Volatile
@@ -21,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "usage_database"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration().build().also { INSTANCE = it }
             }
         }
     }

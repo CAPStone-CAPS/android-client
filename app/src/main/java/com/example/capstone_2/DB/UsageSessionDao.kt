@@ -13,4 +13,7 @@ interface UsageSessionDao {
 
     @Query("SELECT * FROM usage_sessions ORDER BY startTime DESC")
     suspend fun getAllSessions(): List<UsageSessionEntity>
+
+    @Query("SELECT * FROM usage_sessions WHERE startTime BETWEEN :start AND :end")
+    suspend fun getSessionsByDate(start: Long, end: Long): List<UsageSessionEntity>
 }

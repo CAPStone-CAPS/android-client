@@ -1,18 +1,18 @@
 package com.example.capstone_2.util
 
 import android.app.usage.UsageEvents
-import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import com.example.capstone_2.data.AppTimeBlock
 import com.example.capstone_2.data.AppUsageInfo
 import com.example.capstone_2.data.UsageStatWithLabel
 import com.example.capstone_2.data.AppInfoHelper
+import com.example.capstone_2.data.getLifestyleDate
 import java.util.*
-import android.os.Build
 import android.util.Log
+import com.example.capstone_2.data.UsageSessionEntity
 import java.time.LocalDate
 import java.time.ZoneId
+
 
 
 fun getDetailedUsageInfoPerApp(context: Context, date: LocalDate): List<AppUsageInfo> {
@@ -114,15 +114,15 @@ fun getAppUsageStats(context: Context): UsageStatWithLabel {
             it.lastTimeUsed in startTime..endTime && it.totalTimeInForeground > 0
         }
         Log.d("USAGE_RAW", "=== queryUsageStats() 결과 (${rawStats.size}개) ===")
-//        rawStats.forEach { stat ->
-//            Log.d("USAGE_RAW", """
-//                패키지명: ${stat.packageName}
-//                최초 실행: ${stat.firstTimeStamp}
-//                마지막 실행: ${stat.lastTimeStamp}
-//                마지막 사용: ${stat.lastTimeUsed}
-//                포그라운드 시간(ms): ${stat.totalTimeInForeground}
-//            """.trimIndent())
-//        }
+        rawStats.forEach { stat ->
+            Log.d("USAGE_RAW", """
+                패키지명: ${stat.packageName}
+                최초 실행: ${stat.firstTimeStamp}
+                마지막 실행: ${stat.lastTimeStamp}
+                마지막 사용: ${stat.lastTimeUsed}
+                포그라운드 시간(ms): ${stat.totalTimeInForeground}
+            """.trimIndent())
+        }
         val helper = AppInfoHelper(context)
 
         val mergedStats = rawStats.groupBy { it.packageName }
@@ -257,6 +257,11 @@ fun getAppUsageSessions(context: Context, date: LocalDate): List<UsageSession> {
     val lastStartMap = mutableMapOf<String, Long>()
     val sessions = mutableListOf<UsageSession>()
 
+    Log.d("SESSION", "세션 수: ${sessions.size}")
+    sessions.forEach {
+        Log.d("SESSION", "${it.appName}: ${Date(it.startTime)} ~ ${Date(it.endTime)}")
+    }
+
     while (events.hasNextEvent()) {
         events.getNextEvent(event)
 
@@ -285,4 +290,34 @@ fun getAppUsageSessions(context: Context, date: LocalDate): List<UsageSession> {
     }
 
     return sessions
+}
+
+fun convertSessionToTimeGridMatrix(
+    sessions: List<UsageSessionEntity>,
+    date: LocalDate
+): List<Set<String>> {
+    val result = MutableList(144) { mutableSetOf<String>() } // 10분 * 24시간
+
+    val zone = ZoneId.systemDefault()
+    val startOfDay = date.atTime(6, 0).atZone(zone).toInstant().toEpochMilli()
+    val endOfDay = date.plusDays(1).atTime(6, 0).atZone(zone).toInstant().toEpochMilli()
+    val interval = 10 * 60 * 1000L
+
+    for (session in sessions) {
+        val lifestyleDate = session.getLifestyleDate()
+
+        if (session.getLifestyleDate() != date) continue
+        if (lifestyleDate != date) continue
+
+        Log.d("GRID", "✅ ${session.appName} 사용됨 (${Date(session.startTime)} ~ ${Date(session.endTime)}) → 기준날짜 $lifestyleDate")
+
+        val startIndex = ((session.startTime - startOfDay) / interval).toInt().coerceIn(0, 143)
+        val endIndex = ((session.endTime - startOfDay) / interval).toInt().coerceIn(0, 143)
+
+        for (i in startIndex..endIndex) {
+            result[i].add(session.appName)
+        }
+    }
+
+    return result
 }

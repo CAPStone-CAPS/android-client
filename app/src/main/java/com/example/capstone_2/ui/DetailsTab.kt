@@ -99,6 +99,7 @@ fun DetailsScreen(
                     )
                 },
                 colorMap = colorMap,
+                selectedDate = selectedDate,
                 modifier = Modifier
                     .weight(1.2f)
                     .fillMaxHeight()

@@ -22,11 +22,14 @@ import com.example.capstone_2.data.AppUsageInfo
 import com.example.capstone_2.data.UsageSessionEntity
 import com.example.capstone_2.ui.theme.RomanticBlue
 import com.example.capstone_2.util.convertEventsToTimeGridMatrix
+import com.example.capstone_2.util.convertSessionToTimeGridMatrix
 import com.example.capstone_2.util.getAppUsageSessions
 import com.example.capstone_2.util.getDetailedUsageInfoPerApp
 import com.example.capstone_2.util.hasUsageStatsPermission
+import com.example.capstone_2.data.getLifestyleDate
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 
 
@@ -90,7 +93,14 @@ fun AppUsageTrackerScreen(context: Context) {
             usageInfoState.value = usageList
             totalTimeState.value = usageList.sumOf { it.totalTimeInForeground }
 
-            val timeGrid = convertEventsToTimeGridMatrix(context, selectedDate)
+            val startMillis = selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val endMillis = selectedDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+            val sessions = dao.getAllSessions().filter {
+                it.getLifestyleDate() == selectedDate
+            }
+
+            val timeGrid = convertSessionToTimeGridMatrix(sessions, selectedDate)
             timeGridState.value = timeGrid
 
             Log.d("APP_DEBUG", "날짜 $selectedDate 의 데이터 새로 로드 완료")
