@@ -46,7 +46,7 @@ fun TopSection(totalTimeMillis: Long) {
         modifier = Modifier
             .fillMaxWidth()
             .background(RomanticBlue)
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 40.dp)
     ) {
         // 왼쪽 아이콘
         Icon(
@@ -60,8 +60,18 @@ fun TopSection(totalTimeMillis: Long) {
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(today, fontSize = 20.sp, textAlign = TextAlign.Center, color = Color.White)
-            Text(formattedTime, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(today,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                modifier = Modifier.offset(y = (-13).dp))
+
+            Text(
+                formattedTime,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.offset(y = (-13).dp))
         }
 
         // 오른쪽 설정 아이콘
