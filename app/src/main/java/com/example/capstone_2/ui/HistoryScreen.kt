@@ -5,12 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.icons.Icons
-<<<<<<< HEAD
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-=======
 import androidx.compose.material.icons.filled.*
->>>>>>> cf882c550b4adc804dd4d76ae45fdd29ce8f0a22
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material3.*
@@ -49,8 +46,8 @@ fun HistoryScreen(
         topBar = {
             SmallTopAppBar(
                 title = { Text("과거 기록 (일별)") },
-                navigationIcon = onNavigateBack?.let { callback ->
-                    {
+                navigationIcon = {
+                    onNavigateBack?.let { callback ->
                         IconButton(onClick = callback) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "뒤로")
                         }

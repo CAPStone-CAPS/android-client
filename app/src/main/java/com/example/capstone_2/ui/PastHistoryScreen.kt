@@ -110,8 +110,7 @@ fun HistoryScreen(
         topBar = {
             TopAppBar(
                 title = { Text("과거 기록") },
-                navigationIcon = onNavigateBack?.let { callback ->
-                    {
+                navigationIcon = {onNavigateBack?.let { callback ->
                         IconButton(onClick = callback) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "뒤로")
                         }
