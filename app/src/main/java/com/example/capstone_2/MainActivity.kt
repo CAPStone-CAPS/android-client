@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                         when (selectedTab) {
                             0 -> AppUsageTrackerScreen(context = this@MainActivity)
                             1 -> HistoryScreen()
-                            2 -> Text("그룹 화면 (준비 중)", modifier = Modifier.padding(16.dp))
+                            2 -> GroupScreen()
                             3 -> Text("마이페이지 (준비 중)", modifier = Modifier.padding(16.dp))
                         }
                     }

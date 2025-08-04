@@ -15,4 +15,7 @@ interface MemoDao {
 
     @Query("SELECT * FROM memo_sessions WHERE date = :date AND blockIndex = :index")
     suspend fun getMemoByBlock(date: String, index: Int): MemoEntity?
+
+    @Query("DELETE FROM memo_sessions WHERE date = :date")
+    suspend fun deleteMemosByDate(date: String)
 }
