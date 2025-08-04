@@ -3,6 +3,7 @@ package com.example.capstone_2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+<<<<<<< HEAD
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -13,6 +14,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.capstone_2.ui.*
+=======
+import com.example.capstone_2.ui.navigation.MainScreen
+>>>>>>> cf882c550b4adc804dd4d76ae45fdd29ce8f0a22
 import com.example.capstone_2.ui.theme.CapstoneTheme
 import com.example.capstone_2.ui.theme.RomanticBlue
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -26,6 +30,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CapstoneTheme {
+<<<<<<< HEAD
                 var selectedTab by remember { mutableStateOf(0) }
 
                 // 상태바 색 적용 (로맨틱 블루)
@@ -61,6 +66,9 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+=======
+                MainScreen(context = this@MainActivity)
+>>>>>>> cf882c550b4adc804dd4d76ae45fdd29ce8f0a22
             }
         }
     }
