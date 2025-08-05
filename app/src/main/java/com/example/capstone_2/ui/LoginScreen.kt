@@ -225,9 +225,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                         )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
@@ -252,9 +254,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
@@ -279,9 +283,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
@@ -307,9 +313,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
         }
     }
 
