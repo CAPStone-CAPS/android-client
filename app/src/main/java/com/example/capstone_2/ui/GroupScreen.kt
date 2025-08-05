@@ -61,6 +61,17 @@ interface GroupApiService {
 
     @GET("/api/group")
     suspend fun getGroups(): GetGroupsResponse
+
+    @POST("/api/group/{group_id}/member/{user_id}")
+    suspend fun inviteFriend(
+        @retrofit2.http.Path("group_id") groupId: Int,
+        @retrofit2.http.Path("user_id") username: String
+    ): InviteFriendResponse
+
+    @GET("/api/group/{group_id}/members")
+    suspend fun getGroupMembers(
+        @retrofit2.http.Path("group_id") groupId: Int
+    ): GroupMembersResponse
 }
 
 // 그룹 목록 조회 응답
@@ -74,10 +85,46 @@ data class GroupsData(
     val groups: List<GroupData>
 )
 
+// 친구 초대 응답
+data class InviteFriendResponse(
+    val message: String,
+    val data: InvitedUserData?
+)
+
+// 초대된 사용자 데이터
+data class InvitedUserData(
+    val id: Int,
+    val username: String
+)
+
+// 그룹 멤버 조회 응답
+data class GroupMembersResponse(
+    val message: String,
+    val data: GroupMembersData
+)
+
+// 그룹 멤버 데이터 래퍼
+data class GroupMembersData(
+    val members: List<GroupMember>
+)
+
+// 그룹 멤버 정보 (API 응답 구조에 맞게 수정)
+data class GroupMember(
+    val user: GroupMemberUser,
+    val summary: String,
+    val profile_image_url: String?
+)
+
+// 그룹 멤버의 사용자 정보
+data class GroupMemberUser(
+    val id: Int,
+    val username: String
+)
+
 // 토큰 저장을 위한 싱글톤 객체
 object AuthManager {
-    // TODO: 실제 JWT 토큰을 여기에 설정하세요 (예: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-    var authToken: String? = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU0NDE3MTk5LCJpYXQiOjE3NTQ0MTY4OTksImp0aSI6ImM2ZWRhMTM5MGZlMzQyYTViYzE5MDlmYzgyNjFjNzNmIiwidXNlcl9pZCI6IjMifQ.RrOj-qICWJAiyicd4Px0k99PnvaEe74UfU-v8q0cRpM"
+    // TODO: JWT 토큰을 여기에 설정
+    var authToken: String? = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU0NDI0NTU1LCJpYXQiOjE3NTQ0MjQyNTUsImp0aSI6IjJlN2FjMjBkOWRkZjQxZDU5ZTlmZWM2MDhhYzBiMDg2IiwidXNlcl9pZCI6IjMifQ.SA4R3xQLXW6Xu2I7EJgzQqJn9Gn2a28wUAr3m4QnYOo"
     init {
         // 토큰이 제대로 설정되었는지 확인
         println("=== AuthManager Initialized ===")
