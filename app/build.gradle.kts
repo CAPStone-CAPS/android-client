@@ -79,6 +79,15 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
+    // Retrofit
+    val retrofitVersion = "3.0.0"
+    implementation("com.squareup.retrofit2:retrofit:${retrofitVersion}")
+    implementation("com.squareup.retrofit2:converter-gson:${retrofitVersion}")
+
+    // ViewModel, LiveData
+    val lifecycleVersion = "2.9.2"
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
+
     // 디버그용
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
