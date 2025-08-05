@@ -51,7 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.loginandmypage.ui.theme.LoginAndMypageTheme
+import com.example.capstone_2.ui.theme.CapstoneTheme
 import kotlin.math.exp
 
 // 앱별로 사용자가 지정한 카테고리를 Int로 저장한다.
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            LoginAndMypageTheme {
+            CapstoneTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     LoginMypageScreen(
                         context = baseContext,
