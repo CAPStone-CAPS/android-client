@@ -10,34 +10,34 @@ import androidx.compose.ui.unit.dp
 import com.example.capstone_2.ui.theme.SierraBlue
 
 @Composable
-fun BottomNavBar() {
-    NavigationBar(
-        //containerColor = SierraBlue,
-        modifier = Modifier.height(96.dp)
-    ) {
+fun BottomNavBar(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit
+) {
+    NavigationBar(modifier = Modifier.height(96.dp)) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             //label = { Text("Home") },
-            selected = true,
-            onClick = { /* TODO: 선택 기능 구현 예정 */ }
+            selected = selectedTab == 0,
+            onClick = { onTabSelected(0) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.History, contentDescription = "History") },
             //label = { Text("History") },
-            selected = false,
-            onClick = { /* TODO */ }
+            selected = selectedTab == 1,
+            onClick = { onTabSelected(1) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Group, contentDescription = "Group") },
             //label = { Text("Group") },
-            selected = false,
-            onClick = { /* TODO */ }
+            selected = selectedTab == 2,
+            onClick = { onTabSelected(2) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "My Page") },
             //label = { Text("My Page") },
-            selected = false,
-            onClick = { /* TODO */ }
+            selected = selectedTab == 3,
+            onClick = { onTabSelected(3) }
         )
     }
 }

@@ -1,56 +1,80 @@
 package com.example.capstone_2.util
 
 import android.app.usage.UsageEvents
-import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import com.example.capstone_2.data.AppTimeBlock
 import com.example.capstone_2.data.AppUsageInfo
 import com.example.capstone_2.data.UsageStatWithLabel
 import com.example.capstone_2.data.AppInfoHelper
+import com.example.capstone_2.data.getLifestyleDate
 import java.util.*
-import android.os.Build
 import android.util.Log
+import com.example.capstone_2.data.UsageSessionEntity
 import java.time.LocalDate
 import java.time.ZoneId
 
 
+
 fun getDetailedUsageInfoPerApp(context: Context, date: LocalDate): List<AppUsageInfo> {
-    val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+    val usageStatsManager =
+        context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+    val zoneId = ZoneId.systemDefault()
+    val startTime = date.atStartOfDay(zoneId).toInstant().toEpochMilli()
+    val endTime = if (date == LocalDate.now()) System.currentTimeMillis()
+    else date.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
 
-    val calendar = Calendar.getInstance().apply {
-        time = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
-    val startTime = calendar.timeInMillis
-    val endTime = if (date == LocalDate.now()) System.currentTimeMillis() else startTime + 24 * 60 * 60 * 1000
-
-    val rawStats = usageStatsManager.queryUsageStats(
-        UsageStatsManager.INTERVAL_DAILY,
-        startTime,
-        endTime
-    ).orEmpty().filter {
-        it.lastTimeUsed in startTime..endTime && it.totalTimeInForeground > 0
-    }
-
+    val events = usageStatsManager.queryEvents(startTime, endTime)
+    val appUsageMap = mutableMapOf<String, Long>()
+    val lastForegroundMap = mutableMapOf<String, Long>()
+    val event = UsageEvents.Event()
     val helper = AppInfoHelper(context)
 
-    return rawStats.groupBy { it.packageName }
-        .mapNotNull { (packageName, stats) ->
-            try {
-                AppUsageInfo(
-                    packageName = packageName,
-                    appName = helper.getAppName(packageName),
-                    appIcon = helper.getAppIcon(packageName),
-                    totalTimeInForeground = stats.sumOf { it.totalTimeInForeground }
-                )
-            } catch (e: Exception) {
-                null
+    while (events.hasNextEvent()) {
+        events.getNextEvent(event)
+
+        when (event.eventType) {
+            UsageEvents.Event.MOVE_TO_FOREGROUND -> {
+                lastForegroundMap[event.packageName] = event.timeStamp
+            }
+
+            UsageEvents.Event.MOVE_TO_BACKGROUND -> {
+                val start = lastForegroundMap[event.packageName] ?: continue
+                val duration = event.timeStamp - start
+                if (duration > 0) {
+                    appUsageMap[event.packageName] =
+                        appUsageMap.getOrDefault(event.packageName, 0L) + duration
+                }
+                lastForegroundMap.remove(event.packageName)
             }
         }
+    }
+
+    val excludedPackages = listOf(
+        "com.android.systemui",
+        "com.google.android.apps.nexuslauncher",
+        "com.sec.android.app.launcher"
+    )
+
+    return appUsageMap.mapNotNull { (packageName, totalTime) ->
+        if (
+            packageName.startsWith("com.android.") ||
+            packageName.startsWith("com.samsung.") ||
+            excludedPackages.contains(packageName)
+        ) {
+            return@mapNotNull null //  제외 대상
+        }
+
+        try {
+            AppUsageInfo(
+                packageName = packageName,
+                appName = helper.getAppName(packageName),
+                appIcon = helper.getAppIcon(packageName),
+                totalTimeInForeground = totalTime
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }.sortedByDescending { it.totalTimeInForeground }
 }
 
 private fun getStartOfDayMillis(): Long {
@@ -209,4 +233,91 @@ fun getActualUsageTimePerApp(context: Context): Map<String, Long> {
     }
 
     return usageMap
+}
+
+data class UsageSession(
+    val packageName: String,
+    val appName: String,
+    val startTime: Long,
+    val endTime: Long
+)
+
+fun getAppUsageSessions(context: Context, date: LocalDate): List<UsageSession> {
+    val usageStatsManager =
+        context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+
+    val zoneId = ZoneId.systemDefault()
+    val startTime = date.atStartOfDay(zoneId).toInstant().toEpochMilli()
+    val endTime = date.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
+
+    val events = usageStatsManager.queryEvents(startTime, endTime)
+    val event = UsageEvents.Event()
+    val helper = AppInfoHelper(context)
+
+    val lastStartMap = mutableMapOf<String, Long>()
+    val sessions = mutableListOf<UsageSession>()
+
+    Log.d("SESSION", "세션 수: ${sessions.size}")
+    sessions.forEach {
+        Log.d("SESSION", "${it.appName}: ${Date(it.startTime)} ~ ${Date(it.endTime)}")
+    }
+
+    while (events.hasNextEvent()) {
+        events.getNextEvent(event)
+
+        when (event.eventType) {
+            UsageEvents.Event.MOVE_TO_FOREGROUND -> {
+                lastStartMap[event.packageName] = event.timeStamp
+            }
+
+            UsageEvents.Event.MOVE_TO_BACKGROUND -> {
+                val start = lastStartMap[event.packageName] ?: continue
+                val end = event.timeStamp
+                lastStartMap.remove(event.packageName)
+
+                if (end > start) {
+                    sessions.add(
+                        UsageSession(
+                            packageName = event.packageName,
+                            appName = helper.getAppName(event.packageName),
+                            startTime = start,
+                            endTime = end
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    return sessions
+}
+
+fun convertSessionToTimeGridMatrix(
+    sessions: List<UsageSessionEntity>,
+    date: LocalDate
+): List<Set<String>> {
+    val result = MutableList(144) { mutableSetOf<String>() } // 10분 * 24시간
+
+    val zone = ZoneId.systemDefault()
+    val startOfDay = date.atTime(6, 0).atZone(zone).toInstant().toEpochMilli()
+    val endOfDay = date.plusDays(1).atTime(6, 0).atZone(zone).toInstant().toEpochMilli()
+    val interval = 10 * 60 * 1000L
+
+    for (session in sessions) {
+        val lifestyleDate = session.getLifestyleDate()
+
+        if (session.getLifestyleDate() != date) continue
+        if (lifestyleDate != date) continue
+
+        Log.d("GRID", "✅ ${session.appName} 사용됨 (${Date(session.startTime)} ~ ${Date(session.endTime)}) → 기준날짜 $lifestyleDate")
+
+        val startIndex = ((session.startTime - startOfDay) / interval).toInt().coerceIn(0, 143)
+        val endIndex = ((session.endTime - startOfDay) / interval).toInt().coerceIn(0, 143)
+
+        for (i in startIndex..endIndex) {
+            result[i].add(session.appName)
+        }
+    }
+
+    return result
 }
