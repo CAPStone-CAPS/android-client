@@ -84,6 +84,11 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:${retrofitVersion}")
     implementation("com.squareup.retrofit2:converter-gson:${retrofitVersion}")
 
+    // Coroutines
+    val coroutinesVersion = "1.6.4"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+
     // ViewModel, LiveData
     val lifecycleVersion = "2.9.2"
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
