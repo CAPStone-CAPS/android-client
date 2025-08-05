@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.capstone_2.ui.*
-import com.example.capstone_2.ui.navigation.MainScreen
+//import com.example.capstone_2.ui.navigation.MainScreen
 import com.example.capstone_2.ui.theme.CapstoneTheme
 import com.example.capstone_2.ui.theme.RomanticBlue
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                MainScreen(context = this@MainActivity)
+//                MainScreen(context = this@MainActivity)
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.capstone_2.ui.theme.SkypeBlue
 
 data class MemberSummary(
     val name: String,
@@ -91,7 +92,7 @@ fun GroupDetailScreen(groupName: String = "그룹 이름 없음", onBack: () -> 
                     Text(
                         text = tab,
                         fontSize = 16.sp,
-                        color = if (selectedTab == tab) Color(0xFF7A67EE) else Color.Gray,
+                        color = if (selectedTab == tab) SkypeBlue else Color.Gray,
                         modifier = Modifier.clickable { selectedTab = tab }
                     )
                 }
