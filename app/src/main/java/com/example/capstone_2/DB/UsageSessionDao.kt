@@ -1,6 +1,6 @@
 package com.example.capstone_2.DB
 
-import com.example.capstone_2.data.UsageSessionEntity
+import com.example.capstone_2.DB.UsageSessionEntity
 import androidx.room.*
 
 @Dao

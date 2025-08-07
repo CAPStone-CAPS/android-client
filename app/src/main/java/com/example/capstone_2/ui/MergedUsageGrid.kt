@@ -1,49 +1,33 @@
-package com.example.capstone_2.ui
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.capstone_2.DB.*
-import com.example.capstone_2.data.AppTimeBlock
-import kotlinx.coroutines.coroutineScope
-import java.time.LocalDate
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.capstone_2.DB.AppDatabase
+import com.example.capstone_2.DB.MemoEntity
+import com.example.capstone_2.data.AppTimeBlock
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+
+
+data class SelectedBlock(
+    val appName: String,
+    val blockIndex: Int
+)
 
 @Composable
 fun MergedUsageGrid(
@@ -68,7 +52,7 @@ fun MergedUsageGrid(
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val db = remember { AppDatabase.getInstance(context) }
+    val db = remember { AppDatabase.getDatabase(context) }
     val dateString = selectedDate.toString()
 
     var memoText by remember { mutableStateOf("") }
@@ -76,7 +60,6 @@ fun MergedUsageGrid(
 
     val selectedBlocks = remember { mutableStateListOf<Int>() }
 
-    // Offset -> 블럭 인덱스 계산 함수
     fun Offset.toBlockIndex(): Int? {
         val col = (x / cellWidthPx).toInt()
         val row = (y / cellHeightPx).toInt()
@@ -111,7 +94,6 @@ fun MergedUsageGrid(
             }
     ) {
         Row {
-            // 시간 라벨
             Column(
                 modifier = Modifier
                     .wrapContentWidth()
@@ -129,7 +111,6 @@ fun MergedUsageGrid(
                 }
             }
 
-            // 그리드
             Column {
                 for (row in 0 until totalRows) {
                     val realRow = visualToRealRow[row]
@@ -139,7 +120,6 @@ fun MergedUsageGrid(
                             val appsUsed = appUsageBlocks.filter {
                                 it.usageBlocks.getOrNull(realIndex) == true
                             }
-
                             val hasMemo = memoMap.containsKey(realIndex)
                             val isSelected = selectedBlocks.contains(realIndex)
                             val sorted = selectedBlocks.sorted()
@@ -163,7 +143,7 @@ fun MergedUsageGrid(
                                         drawLine(Color.LightGray, Offset(0f, size.height), Offset(size.width, size.height), stroke)
 
                                         if (appsUsed.isNotEmpty()) {
-                                            val blockCount = appsUsed.size.coerceAtMost(4)
+                                            val blockCount = appsUsed.size.coerceAtLeast(1).coerceAtMost(4)
                                             val sectionWidth = size.width / blockCount
                                             appsUsed.take(4).forEachIndexed { i, app ->
                                                 val color = colorMap[app.appName] ?: Color.Gray
@@ -176,7 +156,7 @@ fun MergedUsageGrid(
                                         }
 
                                         if (hasMemo) {
-                                            drawRect(Color.Red, style = Stroke(width = 2.dp.toPx()))
+                                            drawRect(Color.Red, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx()))
                                         }
 
                                         when {
@@ -203,11 +183,17 @@ fun MergedUsageGrid(
                 TextButton(onClick = {
                     coroutineScope.launch {
                         selectedBlocks.forEach { idx ->
+                            val appsUsed = appUsageBlocks.filter {
+                                it.usageBlocks.getOrNull(idx) == true
+                            }
+                            val appName = appsUsed.firstOrNull()?.appName ?: "Unknown"
+
                             db.memoDao().insertMemo(
                                 MemoEntity(
-                                    blockIndex = idx,
                                     date = dateString,
-                                    content = memoText
+                                    appName = appName,
+                                    blockIndices = idx.toString(),
+                                    memo = memoText
                                 )
                             )
                         }

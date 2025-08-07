@@ -1,6 +1,7 @@
 package com.example.capstone_2.data
 
 import android.util.Log
+import com.example.capstone_2.DB.UsageSessionEntity
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime

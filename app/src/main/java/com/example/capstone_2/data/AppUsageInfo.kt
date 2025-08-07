@@ -1,6 +1,8 @@
 package com.example.capstone_2.data
 
+import android.app.usage.UsageEvents
 import android.graphics.drawable.Drawable
+import com.example.capstone_2.util.AppEvent
 
 // 앱 사용 정보
 data class AppUsageInfo(
@@ -9,13 +11,15 @@ data class AppUsageInfo(
     val appIcon: Drawable?,
     val totalTimeInForeground: Long,
     val firstTimeStamp: Long = 0L,
-    val lastTimeStamp: Long = 0L
+    val lastTimeStamp: Long = 0L,
+    val usageEvents: List<AppEvent>
 )
 
 // 하루 144개 블럭으로 표현한 앱 사용 정보
 data class AppTimeBlock(
     val appName: String,
-    val usageBlocks: List<Boolean>  // 24시간 * 6 = 144개 (10분 단위)
+    val usageBlocks: BooleanArray, // size == 144
+    val totalDurationMillis: Long
 )
 
 // 사용 시간 총합 + 앱 리스트

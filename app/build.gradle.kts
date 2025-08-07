@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -53,7 +55,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.room.common.jvm) //Theme.MaterialComponents 오류 방지
+    implementation(libs.androidx.room.common.jvm)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -83,9 +85,17 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:test-junit4")
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+
     implementation("androidx.room:room-runtime:2.7.2")
     kapt("androidx.room:room-compiler:2.7.2")
     implementation("androidx.room:room-ktx:2.7.2")
+
+    //retorifit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // (필요 시 OkHttp 로깅)
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 }
 
 kapt {

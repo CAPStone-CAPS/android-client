@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -29,7 +27,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionErrors
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,8 +47,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.loginandmypage.ui.theme.LoginAndMypageTheme
-import kotlin.math.exp
+import com.example.capstone_2.R
+import com.example.capstone_2.ui.theme.CapstoneTheme
 
 // 앱별로 사용자가 지정한 카테고리를 Int로 저장한다.
 // 카테고리: 0 = 놀기(기본), 1 = 공부.
@@ -88,7 +84,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            LoginAndMypageTheme {
+            CapstoneTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     LoginMypageScreen(
                         context = baseContext,
@@ -206,6 +202,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
     Surface(Modifier) {
         Column(Modifier) {
             Image(
+                // TODO API를 통해 불러온 프로필 사진으로 교체.
                 painter = painterResource(id = R.drawable.profile_picture),
                 contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
                 contentScale = ContentScale.Fit,
@@ -228,9 +225,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                         )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
@@ -255,9 +254,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
@@ -282,9 +283,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
@@ -293,7 +296,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     }
                 ) {
                     Icon(
-                        Icons.AutoMirrored.Filled.ExitToApp,
+                        Icons.Default.ExitToApp,
                         contentDescription = "로그아웃 아이콘",
                         modifier = Modifier
                             .size(80.dp)
@@ -310,9 +313,11 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                 )
             }
+            /*
             HorizontalDivider(
                 thickness = 2.dp
             )
+            */
         }
     }
 
@@ -376,7 +381,7 @@ fun AppSettingsScreen(onAppSettingsClose: () -> Unit) {
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
                 content = {
                     Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
+                        Icons.Default.ArrowBack,
                         contentDescription = "뒤로가기"
                     )
                 }
