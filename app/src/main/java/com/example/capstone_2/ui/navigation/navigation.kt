@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.capstone_2.ui.AppUsageTrackerScreen
+import com.example.capstone_2.ui.LoginMypageScreen
 import com.example.capstone_2.ui.history.HistoryScreen
 
 @Composable
@@ -40,7 +41,7 @@ fun MainScreen(context: Context) {
                 PlaceholderScreen("그룹 화면")
             }
             composable("profile") {
-                PlaceholderScreen("마이 페이지")
+                LoginMypageScreen(context = context, modifier = Modifier)
             }
         }
     }
