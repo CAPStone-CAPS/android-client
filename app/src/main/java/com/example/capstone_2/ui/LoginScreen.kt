@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,7 +29,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -58,15 +56,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.capstone_2.R
-import com.example.capstone_2.data.LoginSession
-import com.example.capstone_2.data.User
 import com.example.capstone_2.retrofit.LoginService
 import com.example.capstone_2.retrofit.NullableUserRequest
 import com.example.capstone_2.retrofit.RetrofitInstance
 import com.example.capstone_2.retrofit.UserRequest
 import com.example.capstone_2.ui.theme.CapstoneTheme
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 // 앱별로 사용자가 지정한 카테고리를 Int로 저장한다.
 // 카테고리: 0 = 놀기(기본), 1 = 공부.
@@ -201,12 +196,6 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
-}
-
-// API로 유저네임 변경 요청을 전송하고 성공 여부를 반환.
-fun sendUsernameChangeRequest(username: String): Boolean {
-    // TODO
-    return true
 }
 
 @Composable
@@ -534,7 +523,7 @@ fun AppSettingsScreen(onAppSettingsClose: () -> Unit) {
     val LoggedInUser = mapOf<String, String>(
         "id" to "0", "username" to "testuser"
     )
-    val currentappCategorySettings : AppCategorySettings = AppCategorySettings(LoggedInUser.getValue("username"))
+    val currentappCategorySettings = AppCategorySettings(LoggedInUser.getValue("username"))
     var currentAppNameList: Array<String>
 
     // 사용 기록에서 앱 이름만 가져와서 key로 사용 예정. 일단 임시로 테스트용 데이터를 넣어둠.
