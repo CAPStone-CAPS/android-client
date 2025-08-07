@@ -1,7 +1,5 @@
 package com.example.capstone_2.DB
 
-import com.example.capstone_2.data.UsageSessionEntity
-
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room

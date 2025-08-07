@@ -54,7 +54,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
+// import coil3.compose.AsyncImage
 import com.example.capstone_2.R
 import com.example.capstone_2.retrofit.LoginService
 import com.example.capstone_2.retrofit.NullableUserRequest
@@ -355,10 +355,20 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
 
     Surface(Modifier) {
         Column(Modifier) {
-            if(profileimageExists) {
+            if(profileimageExists) { // TODO 이 부분이 원인이 아니라면 원상복구
+                /*
                 AsyncImage(
                     model = profileURL,
                     contentDescription = "프로필 사진",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(210.dp, 260.dp)
+                        .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
+                )
+                */
+                Image(
+                    painter = painterResource(id = R.drawable.profile_picture),
+                    contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(210.dp, 260.dp)
