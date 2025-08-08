@@ -32,7 +32,7 @@ fun MainScreen(context: Context) {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable("home") {
-                AppUsageTrackerScreen(context = context)
+                AppUsageTrackerScreen()
             }
             composable("history") {
                 HistoryScreen()

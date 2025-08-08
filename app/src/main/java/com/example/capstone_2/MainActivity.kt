@@ -1,5 +1,6 @@
 package com.example.capstone_2
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             0 -> AppUsageTrackerScreen()//(context = this@MainActivity)
                             1 -> HistoryScreen()
                             2 -> GroupScreen()
-                            3 -> Text("마이페이지 (준비 중)", modifier = Modifier.padding(16.dp))
+                            3 -> LoginMypageScreen(context = baseContext, modifier = Modifier)
                         }
                     }
                 }

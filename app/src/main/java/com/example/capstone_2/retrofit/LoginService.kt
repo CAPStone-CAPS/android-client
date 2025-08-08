@@ -1,5 +1,7 @@
 package com.example.capstone_2.retrofit
 
+import com.example.capstone_2.data.GetUserResponse
+import com.example.capstone_2.data.LoginResponse
 import com.example.capstone_2.data.LoginSession
 import com.example.capstone_2.data.SignupResult
 import com.example.capstone_2.data.User
@@ -22,16 +24,16 @@ data class NullableUserRequest(
 
 interface LoginService {
     @GET("/api/users/me")
-    suspend fun getUser(@Header("accessToken") token: String): Response<User>
+    suspend fun getUser(@Header("Authorization") bearerToken: String): Response<GetUserResponse>
 
     @POST("/api/users/login")
-    suspend fun login(@Body request: UserRequest): Response<LoginSession>
+    suspend fun login(@Body request: UserRequest): Response<LoginResponse>
 
     @POST("/api/users/signup")
     suspend fun signup(@Body request: UserRequest): Response<SignupResult>
 
     @PATCH("/api/users/me")
-    suspend fun editUser(@Header("accessToken") token: String, @Body request: NullableUserRequest): Response<User>
+    suspend fun editUser(@Header("Authorization") bearerToken: String, @Body request: NullableUserRequest): Response<GetUserResponse>
 
     // TODO 프로필 이미지 업로드 호출도 추가....
 }
