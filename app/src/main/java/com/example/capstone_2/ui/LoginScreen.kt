@@ -383,6 +383,9 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
                     modifier = Modifier
                         .size(210.dp, 260.dp)
                         .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
+                        .clickable(onClick = {
+                            viewModel.getUser()
+                        })
                 )
             } else {
                 Image(
@@ -392,6 +395,9 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
                     modifier = Modifier
                         .size(210.dp, 260.dp)
                         .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
+                        .clickable(onClick = {
+                            viewModel.getUser()
+                        })
                 )
             }
             Row() {
