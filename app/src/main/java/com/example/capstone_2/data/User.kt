@@ -1,5 +1,6 @@
 package com.example.capstone_2.data
 
+import android.os.Message
 import com.google.gson.annotations.SerializedName
 
 data class User(
@@ -11,4 +12,12 @@ data class User(
 
     @SerializedName("profile_image_url")
     val profile_image_url: String?
+)
+
+data class GetUserResponse(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("data")
+    val data: User
 )

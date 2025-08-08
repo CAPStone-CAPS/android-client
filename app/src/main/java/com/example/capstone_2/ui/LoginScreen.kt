@@ -2,6 +2,7 @@ package com.example.capstone_2.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -111,6 +112,7 @@ class MainActivity : ComponentActivity() {
 
 // 현재 사용하고 있는 토큰. 구현 문제로 일단 전역변수로 설정.
 var currentToken: String? = null
+var currentRefresh: String? = null
 
 /*
 * 랜딩 페이지가 없으므로, 로그인 상태라면 마이페이지, 그렇지 않으면 로그인 페이지가 나오도록 한다.
@@ -159,7 +161,10 @@ class LoginViewModel : ViewModel() {
             try {
                 val response = retrofitInstance.login(UserRequest(username, password))
                 if (response.isSuccessful) {
-                    currentToken = response.body()!!.accessToken
+                    currentToken = response.body()!!.data.accessToken
+                    currentRefresh = response.body()!!.data.refresh
+                    Log.d("LOGIN", "remote Token: ${response.body()!!.data.accessToken}")
+                    Log.d("LOGIN", "currentToken: $currentToken")
                     loginSuccess = true
                 } else {
                     errorMessage = "로그인 실패 (${response.code()})"
@@ -181,7 +186,8 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val loginResponse = retrofitInstance.login(UserRequest(username, password))
                     if (loginResponse.isSuccessful) {
-                        currentToken = loginResponse.body()!!.accessToken
+                        currentToken = loginResponse.body()!!.data.accessToken
+                        currentRefresh = loginResponse.body()!!.data.refresh
                         loginSuccess = true
                     } else {
                         errorMessage = "회원가입에 성공했으나 로그인에 실패하였습니다. (${loginResponse.code()})"
@@ -297,18 +303,23 @@ class MyPageViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                val response = retrofitInstance.getUser(currentToken!!)
+                Log.d("GETUSER", "Token: ${currentToken} 으로 요청...")
+                val response = retrofitInstance.getUser(currentToken!!, currentRefresh!!)
                 if(response.isSuccessful) {
-                    username = response.body()!!.username
-                    if(response.body()!!.profile_image_url != null) {
+                    Log.d("GETUSER", "Username: ${response.body()!!.data.username}")
+                    username = response.body()!!.data.username
+                    if(response.body()!!.data.profile_image_url != null) {
                         profileimageExists = true
-                        profileURL = response.body()!!.profile_image_url!!
+                        profileURL = response.body()!!.data.profile_image_url!!
                     } else {
                         profileimageExists = false
                     }
+                } else {
+                    Log.e("GETUSER", "요청 실패: ${response.code()}")
                 }
             } catch (e: Exception) {
                 errorMessage = "오류 발생: ${e.localizedMessage}"
+                Log.e("GETUSER", "오류 발생: ${e.localizedMessage}")
             } finally {
                 isLoading = false
             }
@@ -320,11 +331,12 @@ class MyPageViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                val response = retrofitInstance.editUser(currentToken!!, NullableUserRequest(username, null))
+                val response = retrofitInstance.editUser(currentToken!!, currentRefresh!!, NullableUserRequest(username, null))
                 if(response.isSuccessful) {
-                    username = response.body()!!.username
+                    username = response.body()!!.data.username
                 } else {
                     errorMessage = "이름 변경에 실패하였습니다. (${response.code()})"
+                    Log.e("EDITUSER", errorMessage!!)
                 }
             } catch (e: Exception) {
                 errorMessage = "오류 발생: ${e.localizedMessage}"
@@ -350,8 +362,6 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
     val LoggedInUser = mutableMapOf<String, String>(
         "id" to "0", "username" to "testuser"
     )
-
-    viewModel.getUser()
 
     Surface(Modifier) {
         Column(Modifier) {
@@ -394,6 +404,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
                         .padding(start = 30.dp, bottom = 30.dp)
                         .clickable(
                             onClick = {
+                                viewModel.getUser()
                                 usernameEditDialogOpen = true
                             }
                         )
