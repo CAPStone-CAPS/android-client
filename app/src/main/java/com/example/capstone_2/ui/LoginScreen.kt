@@ -304,7 +304,7 @@ class MyPageViewModel : ViewModel() {
             errorMessage = null
             try {
                 Log.d("GETUSER", "Token: ${currentToken} 으로 요청...")
-                val response = retrofitInstance.getUser(currentToken!!, currentRefresh!!)
+                val response = retrofitInstance.getUser("Bearer ${ currentToken!! }")
                 if(response.isSuccessful) {
                     Log.d("GETUSER", "Username: ${response.body()!!.data.username}")
                     username = response.body()!!.data.username
@@ -331,7 +331,7 @@ class MyPageViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                val response = retrofitInstance.editUser(currentToken!!, currentRefresh!!, NullableUserRequest(username, null))
+                val response = retrofitInstance.editUser("Bearer ${ currentToken!! }", NullableUserRequest(username, null))
                 if(response.isSuccessful) {
                     username = response.body()!!.data.username
                 } else {

@@ -24,7 +24,7 @@ data class NullableUserRequest(
 
 interface LoginService {
     @GET("/api/users/me")
-    suspend fun getUser(@Header("accessToken") token: String, @Header("refresh") refresh: String): Response<GetUserResponse>
+    suspend fun getUser(@Header("Authorization") bearerToken: String): Response<GetUserResponse>
 
     @POST("/api/users/login")
     suspend fun login(@Body request: UserRequest): Response<LoginResponse>
@@ -33,7 +33,7 @@ interface LoginService {
     suspend fun signup(@Body request: UserRequest): Response<SignupResult>
 
     @PATCH("/api/users/me")
-    suspend fun editUser(@Header("accessToken") token: String, @Header("refresh") refresh: String, @Body request: NullableUserRequest): Response<GetUserResponse>
+    suspend fun editUser(@Header("Authorization") bearerToken: String, @Body request: NullableUserRequest): Response<GetUserResponse>
 
     // TODO 프로필 이미지 업로드 호출도 추가....
 }
