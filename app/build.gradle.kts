@@ -79,6 +79,24 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
+    // Retrofit
+    val retrofitVersion = "3.0.0"
+    implementation("com.squareup.retrofit2:retrofit:${retrofitVersion}")
+    implementation("com.squareup.retrofit2:converter-gson:${retrofitVersion}")
+
+    // Coroutines
+    val coroutinesVersion = "1.6.4"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+
+    // ViewModel, LiveData
+    val lifecycleVersion = "2.9.2"
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
+/*
+    // Coil
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+*/
     // 디버그용
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

@@ -30,7 +30,7 @@ data class AppUsage(
     val appName: String,
     val usageTime: String,   // "HH:mm"
     val usageMinutes: Int,
-    val color: Color = MaterialTheme.colorScheme.primary
+    val color: Color // = MaterialTheme.colorScheme.primary
 )
 
 data class DayUsageData(
