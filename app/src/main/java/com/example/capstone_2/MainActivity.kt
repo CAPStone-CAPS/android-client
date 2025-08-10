@@ -17,7 +17,7 @@ import com.example.capstone_2.ui.*
 import com.example.capstone_2.ui.theme.CapstoneTheme
 import com.example.capstone_2.ui.theme.RomanticBlue
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.example.capstone_2.ui.history.HistoryScreen
+//import com.example.capstone_2.ui.history.HistoryScreen
 import com.example.capstone_2.viewmodel.UsageUploadViewModel
 
 
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         when (selectedTab) {
                             0 -> AppUsageTrackerScreen()//(context = this@MainActivity)
-                            1 -> HistoryScreen()
+                            //1 -> HistoryScreen()
                             2 -> GroupScreen()
                             3 -> Text("마이페이지 (준비 중)", modifier = Modifier.padding(16.dp))
                         }
