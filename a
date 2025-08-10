@@ -1,0 +1,394 @@
+[33mcommit 5d9d1303c9bf16e31d4ee771970ba814f14656d2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: jaegwan <password0319@naver.com>
+Date:   Mon Aug 11 01:20:15 2025 +0900
+
+    그룹탭 수정
+
+[33mcommit 0714501498190fad653f758fa853c327d92ec06e[m
+Merge: 5d8deaf 1b3c5cf
+Author: jaegwan <password0319@naver.com>
+Date:   Mon Aug 11 01:19:54 2025 +0900
+
+    그룹탭 수정
+
+[33mcommit 5d8deaf37a2ed4a1ecc95b7d40a0f67cee50f0cc[m
+Author: jaegwan <password0319@naver.com>
+Date:   Mon Aug 11 01:14:11 2025 +0900
+
+    그룹 수정
+
+[33mcommit 95453c71d3a22da8fa497d25273a18d12ac54e28[m
+Author: jaegwan <password0319@naver.com>
+Date:   Mon Aug 11 01:13:27 2025 +0900
+
+    그룹 화면 수정
+
+[33mcommit 1b3c5cf115440f3984cc399918ff6ca70d2cacdb[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feat/mypage[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: d71a1fa d7f463a
+Author: Kim Jaebum <141145786+cowcitizen@users.noreply.github.com>
+Date:   Mon Aug 11 00:58:02 2025 +0900
+
+    Merge pull request #11 from CAPStone-CAPS/feat/login
+    
+    로그인 화면 기본 구현
+
+[33mcommit d7f463a9944e19406f9328087dfdbc9c7927d8ac[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Mon Aug 11 00:50:40 2025 +0900
+
+    login-testing의 수정 사항 반영
+    
+    login-testing 브랜치에서 작성하고 작동 확인한 내용을 반영하였습니다.
+
+[33mcommit 4f7f038864d0f27fa61015b4a01df7a621fb8542[m[33m ([m[1;31morigin/feat/login[m[33m)[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 12:36:07 2025 +0900
+
+    유저 정보 표시
+    
+    임시로, 프로필 사진을 클릭하여 유저 정보를 취득하도록 하였습니다. 프로필 사진도 표시하고자 하였으나 Coil 라이브러리를 추가하면 자꾸 오류가 나서 일단 제외해 두었습니다.
+
+[33mcommit 56e01ea99a31732f5b31062e437f124d544c22e3[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 12:32:19 2025 +0900
+
+    login-testing의 수정 사항 반영
+    
+    LoginScreen의 수정 사항을 반영했습니다.
+
+[33mcommit f803b911bf2c5c5a51a23adbd1a0e213afd8886c[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 00:55:48 2025 +0900
+
+    AndroidManifest.xml 수정
+    
+    networkSecurityConfig가 중복으로 지정되어 있어 하나를 제거했습니다.
+
+[33mcommit 56724001b920622c60f93dbd52e935ad9c686324[m
+Merge: 96048b7 d129daa
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 00:52:08 2025 +0900
+
+    Merge remote-tracking branch 'origin/feat/login' into feat/login
+    
+    # Conflicts:
+    #       app/build.gradle.kts
+    #       app/src/main/java/com/example/capstone_2/ui/LoginScreen.kt
+
+[33mcommit 96048b76c92bee0efca79aa9a363e9e5f58d73de[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 00:38:50 2025 +0900
+
+    import 및 메소드 정리
+    
+    사용하지 않는 import와 메소드를 일부 정리하였습니다.
+
+[33mcommit 0aa0ca65def7d7122dcdd4556c9520e82f4aa663[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 00:34:59 2025 +0900
+
+    로그인/회원가입 및 마이페이지 API 연결
+    
+    로그인/회원가입은 정상작동 확인하였으며, 현재 다른 파일에서 오류가 발생해 컴파일이 되지 않아 마이페이지 화면 작동은 확인하지 못했습니다.
+
+[33mcommit eb7c0f87268da1d9109a8274d1b1694ec9cfe020[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Thu Aug 7 17:33:39 2025 +0900
+
+    Navigation 연동 및 PastHistoryScreen 임시 수정
+    
+    Navigation.kt에 LoginScreen을 추가하고, PastHistoryScreen.kt에서 AppUsage 필드의 기본값이 오류를 일으키는 것 같아 테스트를 위해 임시로 제거하였습니다.
+
+[33mcommit f6cb1952cb47a12b453d7ec7e30b70fe70db968b[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Wed Aug 6 00:20:19 2025 +0900
+
+    Retrofit 사용을 위한 설정 2
+    
+    User 데이터 클래스를 작성하고, Coroutines를 위한 라이브러리가 누락되어 추가하였습니다.
+
+[33mcommit c8369ca21cdfe2a6585e2aaca41c5981340fb7f3[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Wed Aug 6 00:16:34 2025 +0900
+
+    Retrofit 사용을 위한 설정
+    
+    AndroidManifest에 권한을 추가하고 build.gradle에 라이브러리를 추가했습니다.
+
+[33mcommit 133a2f4db43c5ccbf16ce67c3270668beac58b55[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 23:31:07 2025 +0900
+
+    파일 정리
+    
+    리모트에 있는데 git에서 인식이 안 된 파일을 추가했습니다.
+
+[33mcommit d71a1fa87dc4abf96068a64487de42517f09e28b[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Fri Aug 8 00:39:22 2025 +0900
+
+    ㅊㅈㅇㅊㅈㅇㅊㅈㅇㅊㅈ
+    
+    ㅁㄴㄹㅇ
+
+[33mcommit 27776e8ccae92df0bd06c175fb0ae67e0e3f88a6[m
+Merge: 19661e1 1c79944
+Author: Byblos <mgim1547@gmail.com>
+Date:   Fri Aug 8 00:39:18 2025 +0900
+
+    Merge branch 'main' of https://github.com/CAPStone-CAPS/android-client
+
+[33mcommit d129daa6dae8be056719de9a5f7b37b804757a74[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 00:38:50 2025 +0900
+
+    import 및 메소드 정리
+    
+    사용하지 않는 import와 메소드를 일부 정리하였습니다.
+
+[33mcommit 19661e1a620b110b4cbd2f3a5676d4510320347f[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Fri Aug 8 00:37:54 2025 +0900
+
+    최종의최종의최종의최종
+    
+    detailstab을 전부 갈아 엎고 다시 다 만들었습니다. 제대로된 시각이 표시되고 제대로된 메모가 작성됩니다. 메모는 db에 저장되며 이는 서버에 보내져 ai 서버로 보내집니다. ai 탭에 대한 ui를 전부 다 만들고 고쳤습니다.
+
+[33mcommit 45ee0362be49e27a8f35b4b0dde84a4c819285cc[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Fri Aug 8 00:34:59 2025 +0900
+
+    로그인/회원가입 및 마이페이지 API 연결
+    
+    로그인/회원가입은 정상작동 확인하였으며, 현재 다른 파일에서 오류가 발생해 컴파일이 되지 않아 마이페이지 화면 작동은 확인하지 못했습니다.
+
+[33mcommit c3bd012c91f2f9c4604f7bede2667cc66071812c[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Thu Aug 7 17:33:39 2025 +0900
+
+    Navigation 연동 및 PastHistoryScreen 임시 수정
+    
+    Navigation.kt에 LoginScreen을 추가하고, PastHistoryScreen.kt에서 AppUsage 필드의 기본값이 오류를 일으키는 것 같아 테스트를 위해 임시로 제거하였습니다.
+
+[33mcommit 51add4c3ec1a6165264fca4bbdc245c99fda9ff9[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Thu Aug 7 00:45:56 2025 +0900
+
+    Retrofit 사용을 위한 설정 3
+    
+    Retrofit에 필요한 서비스 인터페이스 및 클래스, 그리고 Retrofit 클래스를 작성하였습니다.
+
+[33mcommit b49630651ace943ad9e3755537f7fa3ead199646[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Wed Aug 6 00:20:19 2025 +0900
+
+    Retrofit 사용을 위한 설정 2
+    
+    User 데이터 클래스를 작성하고, Coroutines를 위한 라이브러리가 누락되어 추가하였습니다.
+
+[33mcommit e0bbfc67103397a1503a7e1af079397011df5f2b[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Wed Aug 6 00:16:34 2025 +0900
+
+    Retrofit 사용을 위한 설정
+    
+    AndroidManifest에 권한을 추가하고 build.gradle에 라이브러리를 추가했습니다.
+
+[33mcommit abf88bdf92c9e8b3b5fa944965d059e1caca191d[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 23:37:27 2025 +0900
+
+    UI 테스트용 프로필 사진 추가
+    
+    테스트에 사용한 임시 사진 파일을 추가했습니다.
+
+[33mcommit 7e2f0d1461b9fa00fea153806321a0fbef2fa477[m
+Merge: 040aeab 1c79944
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 23:31:40 2025 +0900
+
+    Merge remote-tracking branch 'origin/feat/login' into feat/login
+    
+    # Conflicts:
+    #       .idea/vcs.xml
+    #       app/src/main/java/com/example/capstone_2/ui/LoginScreen.kt
+
+[33mcommit 040aeab6057304e9861bf3506f94167bba13f4bf[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 23:31:07 2025 +0900
+
+    파일 정리
+    
+    리모트에 있는데 git에서 인식이 안 된 파일을 추가했습니다.
+
+[33mcommit 6ed5487af331f29dff207e6fb5e09217ac2f3e91[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 21:23:31 2025 +0900
+
+    HorizontalDivider 임시 제거
+    
+    HorizontalDivider를 위해 의존성을 추가하려고 하면 다른 컴포저블에서 다 함수 중복 관련 문제가 발생해서, 일단 임시로 제거하였습니다.
+
+[33mcommit cf655280e71a653330dc3c148d90510596f3637c[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 16:28:38 2025 +0900
+
+    Import 정리
+    
+    불필요한 import를 제거하고, 오류가 발생하는 import를 수정했습니다. 아직 HorizontalDivider의 문제가 해결되지 않아서 방법을 찾고 있습니다.
+
+[33mcommit fb2ca28d4c6107652e018958b048b55ab066afad[m
+Author: IRISWIN\kimjb <kim-0117@naver.com>
+Date:   Tue Aug 5 16:07:44 2025 +0900
+
+    Theme 설정
+    
+    프로젝트에 설정된 테마로 변경하였습니다.
+
+[33mcommit 1c7994441a80c0213172079561b107bf759dfce5[m
+Author: jaegwan <password0319@naver.com>
+Date:   Mon Aug 4 18:39:49 2025 +0900
+
+    <<<<<<HEAD와 같은 의문의 코드가 중간중간에 껴있어 오류가 발생했어서 제거하고 GroupScreen을 추가했습니다.
+
+[33mcommit 50b4874225b02668e6512356ad558b5b04d0f18e[m
+Merge: 6553afe cf882c5
+Author: Byblos <mgim1547@gmail.com>
+Date:   Mon Aug 4 14:56:56 2025 +0900
+
+    a
+    
+    a
+
+[33mcommit 6553afea0ecf613bc1d0ae1135c8195fc1964597[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Mon Aug 4 14:55:52 2025 +0900
+
+    fd
+    
+    aadf
+
+[33mcommit cf882c550b4adc804dd4d76ae45fdd29ce8f0a22[m
+Merge: f1351cf 0f8dca2
+Author: Kim Jaebum <141145786+cowcitizen@users.noreply.github.com>
+Date:   Mon Aug 4 13:58:40 2025 +0900
+
+    Merge pull request #9 from CAPStone-CAPS/feat/login
+    
+    로그인/마이페이지 탭 UI 구현
+
+[33mcommit 0f8dca2306040a38198aea8a1492d3be1d5847f4[m
+Author: Kim Jaebum <141145786+cowcitizen@users.noreply.github.com>
+Date:   Sun Aug 3 23:15:25 2025 +0900
+
+    로그인/마이페이지 탭 UI
+    
+    로그인/마이페이지 탭의 기본 UI를 구현하였습니다. 로그인 여부에 따라 로그인 페이지와 마이페이지 중 하나가 출력되도록 하였습니다..
+
+[33mcommit f1351cf06320c9147602b8e2786a9a4496f8e0bb[m
+Merge: 2ca78a8 4bf2d8a
+Author: Jaekwan <132431652+jaegwan0319@users.noreply.github.com>
+Date:   Sun Aug 3 15:56:56 2025 +0900
+
+    Merge pull request #6 from CAPStone-CAPS/feat/#4
+    
+    그룹 초기 화면, 그룹 목록 화면, 그룹 생성 화면 기초적인 UI 구현
+
+[33mcommit 4bf2d8aee2a862d3fce01834fc40bf99e72d57ef[m[33m ([m[1;31morigin/feat/#4[m[33m)[m
+Merge: 8f4633f 2ca78a8
+Author: Jaekwan <132431652+jaegwan0319@users.noreply.github.com>
+Date:   Sun Aug 3 15:56:29 2025 +0900
+
+    Merge branch 'main' into feat/#4
+
+[33mcommit 8f4633f294e599829dcf2410a87377c8a0dfae5b[m
+Author: jaegwan <password0319@naver.com>
+Date:   Sun Aug 3 15:35:58 2025 +0900
+
+    그룹 초기 화면, 그룹 목록 화면, 그룹 생성 화면 기초적인 UI 구현
+
+[33mcommit 2ca78a8cf9cb66d3f440a991c6c1638a98ec8168[m
+Merge: 53c58f1 096c755
+Author: garr3749 <garyoung3749@naver.com>
+Date:   Sun Aug 3 15:27:39 2025 +0900
+
+    Merge pull request #5 from CAPStone-CAPS/feature/history-past-tab
+    
+    PastHistoryScreen 추가 및 navigationBar 적용
+
+[33mcommit 096c7559da0ca1cf1d0fb5a4c79ed3219f5c1858[m
+Author: 박가령 <garyoung3749@naver.com>
+Date:   Sun Aug 3 15:25:50 2025 +0900
+
+    PastHistoryScreen 추가 및 navigationBar 적용
+
+[33mcommit 170562e962236e28c43692a1e599661151e61915[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Sun Aug 3 03:29:27 2025 +0900
+
+    메모를 추가하고 db에 저장했습니다!
+    
+    ai 작업을 더 쉽게 할 수 있게 되었습니다.
+
+[33mcommit b3aeaabba103d4dbe840245dec1332f4a51baa88[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Sat Aug 2 22:11:06 2025 +0900
+
+    세세한 ui변동이 있었어요
+    
+    예예
+
+[33mcommit d720fe5fb44e4dbf7cf1fe49dc08adb91c3afc69[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Sat Aug 2 21:55:24 2025 +0900
+
+    appdata저장용 db생성 및 historyscreen 오류 고치기 및 바텀바 기능 활성화
+    
+    ㅈㄱㄴ
+
+[33mcommit 53c58f1552ef2422029768eeb64ddf84c6e888d5[m
+Merge: dcfb2d1 c237cb7
+Author: garr3749 <garyoung3749@naver.com>
+Date:   Sat Aug 2 15:58:47 2025 +0900
+
+    Merge pull request #3 from CAPStone-CAPS/feature/history-screen
+    
+    기록 탭(Jeck Compose) 화면 추가
+
+[33mcommit c237cb7262a96e8d254aa7892955f3678db70360[m
+Author: 박가령 <garyoung3749@naver.com>
+Date:   Sat Aug 2 15:51:03 2025 +0900
+
+    기록 탭(Jeck Compose) 화면 추가
+
+[33mcommit dcfb2d13c0e23ac787ae813080a5062b979749f3[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Fri Aug 1 14:15:18 2025 +0900
+
+    Update Type.kt
+
+[33mcommit 574e80586259eb3526e532ce7c9b8879fcb785cb[m
+Author: Byblos <mgim1547@gmail.com>
+Date:   Fri Aug 1 14:08:13 2025 +0900
+
+    asdf
+    
+    asdf
+
+[33mcommit 7e8747da16e9bf60f5d92d8a72ba8b781d27be96[m
+Author: jaegwan <132431652+jaegwan0319@users.noreply.github.com>
+Date:   Tue Jul 22 14:12:21 2025 +0900
+
+    Update README.md
+
+[33mcommit d52d816ea8a913a73a6a269f39a03c27379962de[m
+Author: jaegwan <132431652+jaegwan0319@users.noreply.github.com>
+Date:   Tue Jul 22 14:10:36 2025 +0900
+
+    Create README.md
+
+[33mcommit c1125a08d23522e00dbd863d158f22c6069ec8be[m
+Author: jaegwan <password0319@naver.com>
+Date:   Tue Jul 22 14:03:36 2025 +0900
+
+    Initial commit

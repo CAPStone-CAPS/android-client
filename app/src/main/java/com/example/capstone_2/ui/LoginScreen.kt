@@ -165,6 +165,8 @@ class LoginViewModel : ViewModel() {
                     currentRefresh = response.body()!!.data.refresh
                     Log.d("LOGIN", "remote Token: ${response.body()!!.data.accessToken}")
                     Log.d("LOGIN", "currentToken: $currentToken")
+                    // 로그인 성공 시 전역 AuthManager에 토큰 저장 (Group API 인터셉터에서 사용)
+                    AuthManager.authToken = currentToken
                     loginSuccess = true
                 } else {
                     errorMessage = "로그인 실패 (${response.code()})"
@@ -188,6 +190,8 @@ class LoginViewModel : ViewModel() {
                     if (loginResponse.isSuccessful) {
                         currentToken = loginResponse.body()!!.data.accessToken
                         currentRefresh = loginResponse.body()!!.data.refresh
+                        // 회원가입 직후 자동 로그인 성공 시 토큰 저장
+                        AuthManager.authToken = currentToken
                         loginSuccess = true
                     } else {
                         errorMessage = "회원가입에 성공했으나 로그인에 실패하였습니다. (${loginResponse.code()})"

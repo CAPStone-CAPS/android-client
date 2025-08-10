@@ -142,8 +142,8 @@ data class LeaveGroupResponse(
 
 // 토큰 저장을 위한 싱글톤 객체
 object AuthManager {
-    // TODO: JWT 토큰을 여기에 설정
-    var authToken: String? = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU0ODM5MDM4LCJpYXQiOjE3NTQ4Mzg3MzgsImp0aSI6ImRiYzZlZDk4ZGMyNzRiZGM5M2I2ODVmNmUxM2MzOWM0IiwidXNlcl9pZCI6IjQifQ.Suem_rNM9o39bzhCFNK4bKhRnM2g5-AOSUT2RYGqYjM"
+    // 로그인 후 런타임에 설정될 JWT 토큰 (초기값 없음)
+    var authToken: String? = null
     init {
         // 토큰이 제대로 설정되었는지 확인
         println("=== AuthManager Initialized ===")
