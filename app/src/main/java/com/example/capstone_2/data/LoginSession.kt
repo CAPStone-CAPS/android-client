@@ -9,3 +9,11 @@ data class LoginSession (
     @SerializedName("refresh")
     val refresh: String
 )
+
+data class LoginResponse(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("data")
+    val data: LoginSession
+)

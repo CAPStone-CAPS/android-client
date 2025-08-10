@@ -12,3 +12,11 @@ data class User(
     @SerializedName("profile_image_url")
     val profile_image_url: String?
 )
+
+data class GetUserResponse(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("data")
+    val data: User
+)

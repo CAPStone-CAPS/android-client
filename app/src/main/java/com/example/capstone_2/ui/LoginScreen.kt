@@ -2,16 +2,19 @@ package com.example.capstone_2.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,10 +26,10 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -34,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,11 +48,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+// import coil3.compose.AsyncImage
 import com.example.capstone_2.R
+import com.example.capstone_2.retrofit.LoginService
+import com.example.capstone_2.retrofit.NullableUserRequest
+import com.example.capstone_2.retrofit.RetrofitInstance
+import com.example.capstone_2.retrofit.UserRequest
 import com.example.capstone_2.ui.theme.CapstoneTheme
+import kotlinx.coroutines.launch
 
 // 앱별로 사용자가 지정한 카테고리를 Int로 저장한다.
 // 카테고리: 0 = 놀기(기본), 1 = 공부.
@@ -96,6 +110,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// 현재 사용하고 있는 토큰. 구현 문제로 일단 전역변수로 설정.
+var currentToken: String? = null
+var currentRefresh: String? = null
+
 /*
 * 랜딩 페이지가 없으므로, 로그인 상태라면 마이페이지, 그렇지 않으면 로그인 페이지가 나오도록 한다.
 * */
@@ -109,7 +127,7 @@ fun LoginMypageScreen(context: Context, modifier: Modifier) {
         if(userLoggedIn) {
             if(appSettingsPageOpen) {
                 AppSettingsScreen (
-                    onAppSettingsClose = {appSettingsPageOpen = false}
+                    onAppSettingsClose = { appSettingsPageOpen = false }
                 )
             } else {
                 MyPageScreen(
@@ -125,94 +143,260 @@ fun LoginMypageScreen(context: Context, modifier: Modifier) {
     }
 }
 
-// API로 로그인 요청을 전송하고 로그인 성공 여부를 반환.
-fun sendLoginRequest(id: String, password: String): Boolean {
-    // TODO 로그인 API를 호출. 로그인 성공 여부를 반환.
-    return true
-}
+class LoginViewModel : ViewModel() {
+    var retrofitInstance = RetrofitInstance.getRetrofitInstance().create(LoginService::class.java)
 
-// 로그아웃. API에 연동해서 처리하는 게 아닌 경우에는 이름 변경 예정.
-fun sendLogoutRequest(): Boolean {
-    return true
-}
+    var username by mutableStateOf("")
+    var password by mutableStateOf("")
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
 
-// API로 유저네임 변경 요청을 전송하고 성공 여부를 반환.
-fun sendUsernameChangeRequest(username: String): Boolean {
-    // TODO
-    return true
-}
+    var loginSuccess by mutableStateOf(false)
+        private set
 
-@Composable
-fun LoginScreen(modifier: Modifier = Modifier, onLogin: () -> Unit) {
-
-    var inputId by remember { mutableStateOf("") }
-    var inputPassword by remember { mutableStateOf("") }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "로그인",
-            style = TextStyle(
-                fontSize = 48.sp
-            ),
-            modifier = Modifier.padding(36.dp)
-        )
-        OutlinedTextField(
-            value = inputId,
-            onValueChange = { inputId = it },
-            label = { Text("ID") },
-            modifier = Modifier
-                .padding(40.dp, 8.dp)
-                .fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = inputPassword,
-            onValueChange = {inputPassword = it},
-            label = { Text("Password") },
-            modifier = Modifier
-                .padding(40.dp, 8.dp)
-                .fillMaxWidth()
-        )
-        Button(
-            onClick = {
-                var loginSuccess = sendLoginRequest(inputId, inputPassword)
-                if(loginSuccess) {
-                    onLogin()
+    fun login() {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                val response = retrofitInstance.login(UserRequest(username, password))
+                if (response.isSuccessful) {
+                    currentToken = response.body()!!.data.accessToken
+                    currentRefresh = response.body()!!.data.refresh
+                    Log.d("LOGIN", "remote Token: ${response.body()!!.data.accessToken}")
+                    Log.d("LOGIN", "currentToken: $currentToken")
+                    loginSuccess = true
                 } else {
-                    // TODO Snackbar 또는 Dialog를 띄워서 로그인 실패를 알림.
+                    errorMessage = "로그인 실패 (${response.code()})"
                 }
-            },
-            content = { Text("NEXT") },
-            modifier = Modifier
-                .padding(40.dp, 8.dp)
-                .fillMaxWidth()
-        )
+            } catch (e: Exception) {
+                errorMessage = "오류 발생: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun signup() {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                val response = retrofitInstance.signup(UserRequest(username, password))
+                if (response.isSuccessful) {
+                    val loginResponse = retrofitInstance.login(UserRequest(username, password))
+                    if (loginResponse.isSuccessful) {
+                        currentToken = loginResponse.body()!!.data.accessToken
+                        currentRefresh = loginResponse.body()!!.data.refresh
+                        loginSuccess = true
+                    } else {
+                        errorMessage = "회원가입에 성공했으나 로그인에 실패하였습니다. (${loginResponse.code()})"
+                    }
+                } else {
+                    errorMessage = "회원가입 실패 (${response.code()})"
+                }
+            } catch (e: Exception) {
+                errorMessage = "오류 발생: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    onLogin: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
+    ) {
+    val username = viewModel.username
+    val password = viewModel.password
+    val isLoading = viewModel.isLoading
+    val errorMessage = viewModel.errorMessage
+    val loginSuccess = viewModel.loginSuccess
+
+    if (loginSuccess) {
+        // 로그인 성공 시 콜백 호출
+        LaunchedEffect(Unit) {
+            onLogin()
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("로그인")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { viewModel.username = it },
+            label = { Text("아이디") },
+            singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { viewModel.password = it },
+            label = { Text("비밀번호") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (errorMessage != null) {
+            Text(errorMessage)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        Button(
+            onClick = { viewModel.login() },
+            enabled = !isLoading
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("로그인")
+            }
+        }
+
+        Button(
+            onClick = { viewModel.signup() },
+            enabled = !isLoading
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("회원가입하고 로그인")
+            }
+        }
+    }
+}
+
+class MyPageViewModel : ViewModel() {
+    var retrofitInstance = RetrofitInstance.getRetrofitInstance().create(LoginService::class.java)
+
+    var username by mutableStateOf("")
+    var newUsername by mutableStateOf("")
+    var profileimageExists by mutableStateOf(false)
+    var profileURL by mutableStateOf("")
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+
+    fun getUser() {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                Log.d("GETUSER", "Token: ${currentToken} 으로 요청...")
+                val response = retrofitInstance.getUser("Bearer ${ currentToken!! }")
+                if(response.isSuccessful) {
+                    Log.d("GETUSER", "Username: ${response.body()!!.data.username}")
+                    username = response.body()!!.data.username
+                    if(response.body()!!.data.profile_image_url != null) {
+                        profileimageExists = true
+                        profileURL = response.body()!!.data.profile_image_url!!
+                    } else {
+                        profileimageExists = false
+                    }
+                } else {
+                    Log.e("GETUSER", "요청 실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                errorMessage = "오류 발생: ${e.localizedMessage}"
+                Log.e("GETUSER", "오류 발생: ${e.localizedMessage}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun changeUserName() {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                val response = retrofitInstance.editUser("Bearer ${ currentToken!! }", NullableUserRequest(username, null))
+                if(response.isSuccessful) {
+                    username = response.body()!!.data.username
+                } else {
+                    errorMessage = "이름 변경에 실패하였습니다. (${response.code()})"
+                    Log.e("EDITUSER", errorMessage!!)
+                }
+            } catch (e: Exception) {
+                errorMessage = "오류 발생: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+}
+
+@Composable
+fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel: MyPageViewModel = viewModel()) {
+    val username = viewModel.username
+    var newUsername = viewModel.newUsername
+    val profileimageExists = viewModel.profileimageExists
+    val profileURL = viewModel.profileURL
+    val errorMessage = viewModel.errorMessage
+    val isLoading = viewModel.isLoading
+
     var usernameEditDialogOpen by remember { mutableStateOf(false) }
     var profileEditDialogOpen by remember { mutableStateOf(false) }
 
-    val LoggedInUser = mapOf<String, String>(
+    val LoggedInUser = mutableMapOf<String, String>(
         "id" to "0", "username" to "testuser"
     )
 
     Surface(Modifier) {
         Column(Modifier) {
-            Image(
-                // TODO API를 통해 불러온 프로필 사진으로 교체.
-                painter = painterResource(id = R.drawable.profile_picture),
-                contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(210.dp, 260.dp)
-                    .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
-            )
+            if(profileimageExists) { // TODO 이 부분이 원인이 아니라면 원상복구
+                /*
+                AsyncImage(
+                    model = profileURL,
+                    contentDescription = "프로필 사진",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(210.dp, 260.dp)
+                        .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
+                )
+                */
+                Image(
+                    painter = painterResource(id = R.drawable.profile_picture),
+                    contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(210.dp, 260.dp)
+                        .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.profile_picture),
+                    contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(210.dp, 260.dp)
+                        .padding(start = 30.dp, end = 30.dp, top = 100.dp, bottom = 10.dp)
+                )
+            }
             Row() {
                 Text(
-                    text = LoggedInUser.getValue("username"),
+                    text = username,
                     style = TextStyle(
                         fontSize = 48.sp
                     ),
@@ -220,6 +404,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                         .padding(start = 30.dp, bottom = 30.dp)
                         .clickable(
                             onClick = {
+                                viewModel.getUser()
                                 usernameEditDialogOpen = true
                             }
                         )
@@ -291,7 +476,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
-                        sendLogoutRequest()
+                        currentToken = null
                         onLogout()
                     }
                 ) {
@@ -321,8 +506,6 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
         }
     }
 
-    var newUsername by rememberSaveable { mutableStateOf(LoggedInUser.getValue("username")) }
-
     if(usernameEditDialogOpen) {
         Dialog(
             onDismissRequest = { usernameEditDialogOpen = false }
@@ -338,7 +521,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
                     )
                     Row {
                         Button(onClick = {
-                            sendUsernameChangeRequest(newUsername)
+                            viewModel.changeUserName()
                             usernameEditDialogOpen = false
                         }) {
                             Text(text = "확인")
@@ -355,16 +538,16 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit) {
     }
 }
 
-
+// 앱별 설정은 추후 개선 예정으로 남겨둔다.
 @Composable
 fun AppSettingsScreen(onAppSettingsClose: () -> Unit) {
     val LoggedInUser = mapOf<String, String>(
         "id" to "0", "username" to "testuser"
     )
-    val currentappCategorySettings : AppCategorySettings = AppCategorySettings(LoggedInUser.getValue("username"))
+    val currentappCategorySettings = AppCategorySettings(LoggedInUser.getValue("username"))
     var currentAppNameList: Array<String>
 
-    // 사용 기록에서 앱 이름만 가져와서 key로 사용. 일단 임시로 테스트용 데이터를 넣어둠.
+    // 사용 기록에서 앱 이름만 가져와서 key로 사용 예정. 일단 임시로 테스트용 데이터를 넣어둠.
     currentappCategorySettings.addApp("App1")
     currentappCategorySettings.addApp("App2")
     currentappCategorySettings.addApp("App3")
@@ -387,7 +570,7 @@ fun AppSettingsScreen(onAppSettingsClose: () -> Unit) {
                 }
             )
             Text(
-                text = "앱별 설정",
+                text = "앱별 설정 (준비 중 기능)",
                 modifier = Modifier.align(Alignment.CenterVertically),
                 style = TextStyle(
                     fontSize = 24.sp
