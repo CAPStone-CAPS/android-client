@@ -101,8 +101,8 @@ class MainActivity : ComponentActivity() {
             CapstoneTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     LoginMypageScreen(
-                        context = baseContext,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onMoveToGroupScreen = {}
                     )
                 }
             }
@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 현재 사용하고 있는 토큰. 구현 문제로 일단 전역변수로 설정.
+// 현재 사용하고 있는 토큰. 구현 문제로 일단 전역변수로 설정. -> AuthManager를 이용하기로.
 var currentToken: String? = null
 var currentRefresh: String? = null
 
@@ -119,7 +119,7 @@ var currentRefresh: String? = null
 * */
 
 @Composable
-fun LoginMypageScreen(context: Context, modifier: Modifier) {
+fun LoginMypageScreen(modifier: Modifier = Modifier, onMoveToGroupScreen: () -> Unit) {
     var userLoggedIn by rememberSaveable { mutableStateOf(false) }
     var appSettingsPageOpen by rememberSaveable { mutableStateOf(false) }
 
@@ -132,7 +132,8 @@ fun LoginMypageScreen(context: Context, modifier: Modifier) {
             } else {
                 MyPageScreen(
                     onAppSettingsOpen = { appSettingsPageOpen = true },
-                    onLogout = { userLoggedIn = false }
+                    onLogout = { userLoggedIn = false },
+                    onMoveToGroupScreen = onMoveToGroupScreen
                 )
             }
         } else {
@@ -307,8 +308,8 @@ class MyPageViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                Log.d("GETUSER", "Token: ${currentToken} 으로 요청...")
-                val response = retrofitInstance.getUser("Bearer ${ currentToken!! }")
+                Log.d("GETUSER", "Token: ${AuthManager.authToken} 으로 요청...")
+                val response = retrofitInstance.getUser("Bearer ${ AuthManager.authToken!! }")
                 if(response.isSuccessful) {
                     Log.d("GETUSER", "Username: ${response.body()!!.data.username}")
                     username = response.body()!!.data.username
@@ -335,7 +336,7 @@ class MyPageViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                val response = retrofitInstance.editUser("Bearer ${ currentToken!! }", NullableUserRequest(username, null))
+                val response = retrofitInstance.editUser("Bearer ${ AuthManager.authToken!! }", NullableUserRequest(username, null))
                 if(response.isSuccessful) {
                     username = response.body()!!.data.username
                 } else {
@@ -352,7 +353,7 @@ class MyPageViewModel : ViewModel() {
 }
 
 @Composable
-fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel: MyPageViewModel = viewModel()) {
+fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGroupScreen: () -> Unit, viewModel: MyPageViewModel = viewModel()) {
     val username = viewModel.username
     var newUsername = viewModel.newUsername
     val profileimageExists = viewModel.profileimageExists
@@ -363,13 +364,9 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
     var usernameEditDialogOpen by remember { mutableStateOf(false) }
     var profileEditDialogOpen by remember { mutableStateOf(false) }
 
-    val LoggedInUser = mutableMapOf<String, String>(
-        "id" to "0", "username" to "testuser"
-    )
-
-    Surface(Modifier) {
+    Surface(Modifier.fillMaxSize()) {
         Column(Modifier) {
-            if(profileimageExists) { // TODO 이 부분이 원인이 아니라면 원상복구
+            if(profileimageExists) { // Coil 라이브러리를 추가하기만 하면 자꾸 원인 불명의 오류가 발생한다....
                 /*
                 AsyncImage(
                     model = profileURL,
@@ -382,7 +379,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
                 */
                 Image(
                     painter = painterResource(id = R.drawable.profile_picture),
-                    contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
+                    contentDescription = username + "님의 프로필 사진",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(210.dp, 260.dp)
@@ -391,7 +388,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.profile_picture),
-                    contentDescription = LoggedInUser.getValue("username") + "님의 프로필 사진",
+                    contentDescription = username + "님의 프로필 사진",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(210.dp, 260.dp)
@@ -422,7 +419,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, viewModel:
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
-                        // TODO 그룹 탭으로 이동..
+                        onMoveToGroupScreen()
                     }
                 ) {
                     Icon(

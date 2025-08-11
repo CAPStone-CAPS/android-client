@@ -2,6 +2,7 @@ package com.example.capstone_2
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -66,7 +67,10 @@ class MainActivity : ComponentActivity() {
                             0 -> AppUsageTrackerScreen()//(context = this@MainActivity)
                             //1 -> HistoryScreen()
                             2 -> GroupScreen()
-                            3 -> LoginMypageScreen(context = baseContext, modifier = Modifier)
+                            3 -> LoginMypageScreen(onMoveToGroupScreen = {
+                                Log.d("MYPAGE", "GroupScreen으로 이동 시도....")
+                                selectedTab = 2
+                            })
                         }
                     }
                 }

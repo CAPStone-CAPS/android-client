@@ -41,7 +41,7 @@ fun MainScreen(context: Context) {
                 PlaceholderScreen("그룹 화면")
             }
             composable("profile") {
-                LoginMypageScreen(context = context, modifier = Modifier)
+                LoginMypageScreen(onMoveToGroupScreen = {})
             }
         }
     }
