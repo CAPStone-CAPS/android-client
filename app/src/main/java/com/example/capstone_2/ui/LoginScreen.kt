@@ -1,6 +1,5 @@
 package com.example.capstone_2.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -55,43 +54,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-// import coil3.compose.AsyncImage
+// import coil3.compose.AsyncImage // Coil 라이브러리를 추가하면 자꾸 오류가 발생해서 일단 비활성화.
 import com.example.capstone_2.R
+import com.example.capstone_2.data.AppCategorySettings
 import com.example.capstone_2.retrofit.LoginService
 import com.example.capstone_2.retrofit.NullableUserRequest
 import com.example.capstone_2.retrofit.RetrofitInstance
 import com.example.capstone_2.retrofit.UserRequest
 import com.example.capstone_2.ui.theme.CapstoneTheme
 import kotlinx.coroutines.launch
-
-// 앱별로 사용자가 지정한 카테고리를 Int로 저장한다.
-// 카테고리: 0 = 놀기(기본), 1 = 공부.
-data class AppCategorySettings (val username: String) {
-    val SETTING_LEISURE = 0
-    val SETTING_PRODUCTIVE = 1
-
-    private var categoryMap : MutableMap<String, Int> = mutableMapOf<String, Int>()
-
-    fun addApp(appName: String) {
-        categoryMap.put(appName, 0)
-    }
-
-    fun setAppCategory(appName: String, newCategory: Int) {
-        categoryMap.put(appName, newCategory)
-    }
-
-    fun getAppCategory(appName: String): Int {
-        return categoryMap.getValue(appName)
-    }
-
-    fun getAllAppCategory(): Map<String, Int> {
-        return categoryMap.toMap()
-    }
-
-    fun getAppNameSet(): Set<String> {
-        return categoryMap.keys
-    }
-}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,7 +94,7 @@ fun LoginMypageScreen(modifier: Modifier = Modifier, onMoveToGroupScreen: () -> 
     var userLoggedIn by rememberSaveable { mutableStateOf(false) }
     var appSettingsPageOpen by rememberSaveable { mutableStateOf(false) }
 
-    Surface(Modifier) {
+    Surface(modifier = modifier) {
         if(userLoggedIn) {
             if(appSettingsPageOpen) {
                 AppSettingsScreen (
@@ -361,8 +332,15 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
     val errorMessage = viewModel.errorMessage
     val isLoading = viewModel.isLoading
 
+    var userRetrieved by remember { mutableStateOf(false) }
     var usernameEditDialogOpen by remember { mutableStateOf(false) }
     var profileEditDialogOpen by remember { mutableStateOf(false) }
+    if(userRetrieved == false) {
+        Log.d("MYPAGE", "getUser 요청 송신...")
+        viewModel.getUser()
+        userRetrieved = true
+    }
+
 
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier) {
@@ -405,7 +383,6 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
                         .padding(start = 30.dp, bottom = 30.dp)
                         .clickable(
                             onClick = {
-                                viewModel.getUser()
                                 usernameEditDialogOpen = true
                             }
                         )
@@ -507,6 +484,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
         }
     }
 
+    // TODO 텍스트 필드 값을 수정할 수 없는 문제가 있음. 해결할 것.
     if(usernameEditDialogOpen) {
         Dialog(
             onDismissRequest = { usernameEditDialogOpen = false }
@@ -590,7 +568,7 @@ fun AppSettingsScreen(onAppSettingsClose: () -> Unit) {
     }
 }
 
-// TODO 레이아웃이 일자로 보이도록 수정. 앱 아이콘을 추가할 수 있을지 확인.
+// TODO 레이아웃이 일자로 보이도록 수정.
 @Composable
 fun SettingRow(appName: String, currentState: Int, onSettingUpdate: (String, Int) -> Unit) {
     val CATEGORY_NAMES: Array<String> = arrayOf("여가", "공부")
