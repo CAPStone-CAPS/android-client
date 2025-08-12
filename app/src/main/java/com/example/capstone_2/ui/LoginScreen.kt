@@ -178,6 +178,13 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
+
+    fun reset() {
+        if(AuthManager.authToken == null){
+            loginSuccess = false
+        }
+        Log.d("LOGIN", "로그인 페이지 리셋 완료...")
+    }
 }
 
 @Composable
@@ -192,9 +199,19 @@ fun LoginScreen(
     val errorMessage = viewModel.errorMessage
     val loginSuccess = viewModel.loginSuccess
 
+    var needReset = true
+
+    // 로그아웃해서 다시 이 화면으로 돌아오면 리셋.... (토큰을 지우고 loginSuccess를 false로 설정.)
+    if(needReset) {
+        needReset = false
+        viewModel.reset()
+    }
+
     if (loginSuccess) {
         // 로그인 성공 시 콜백 호출
         LaunchedEffect(Unit) {
+            viewModel.username = ""
+            viewModel.password = ""
             onLogin()
         }
     }
@@ -301,7 +318,7 @@ class MyPageViewModel : ViewModel() {
             }
         }
     }
-
+/*
     fun changeUserName() {
         viewModelScope.launch {
             isLoading = true
@@ -316,6 +333,29 @@ class MyPageViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 errorMessage = "오류 발생: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+*/
+
+    fun changeUserName(changedUserName: String) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                val response = retrofitInstance.editUser("Bearer ${ AuthManager.authToken!! }", NullableUserRequest(changedUserName, null))
+                if(response.isSuccessful) {
+                    username = response.body()!!.data.username
+                    Log.d("EDITUSER", "유저네임 변경 성공. 새 유저네임: ${username}")
+                } else {
+                    errorMessage = "이름 변경에 실패하였습니다. (${response.code()})"
+                    Log.e("EDITUSER", errorMessage!!)
+                }
+            } catch (e: Exception) {
+                errorMessage = "오류 발생: ${e.localizedMessage}"
+                Log.e("EDITUSER", errorMessage!!)
             } finally {
                 isLoading = false
             }
@@ -356,7 +396,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
                 )
                 */
                 Image(
-                    painter = painterResource(id = R.drawable.profile_picture),
+                    painter = painterResource(id = R.drawable.profile_placeholder),
                     contentDescription = username + "님의 프로필 사진",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
@@ -365,7 +405,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
                 )
             } else {
                 Image(
-                    painter = painterResource(id = R.drawable.profile_picture),
+                    painter = painterResource(id = R.drawable.profile_placeholder),
                     contentDescription = username + "님의 프로필 사진",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
@@ -454,7 +494,7 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
             Row(modifier = Modifier.padding(30.dp)) {
                 ElevatedButton(
                     onClick = {
-                        currentToken = null
+                        AuthManager.authToken = null
                         onLogout()
                     }
                 ) {
@@ -484,7 +524,8 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
         }
     }
 
-    // TODO 텍스트 필드 값을 수정할 수 없는 문제가 있음. 해결할 것.
+
+    var changedUserName by remember { mutableStateOf("") }
     if(usernameEditDialogOpen) {
         Dialog(
             onDismissRequest = { usernameEditDialogOpen = false }
@@ -493,14 +534,15 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
                 Column(modifier = Modifier.padding(8.dp)) {
                     Text("변경할 이름을 입력해주세요.")
                     OutlinedTextField(
-                        value = newUsername,
-                        onValueChange = {newUsername = it},
+                        value = changedUserName,
+                        onValueChange = {changedUserName = it},
                         singleLine = true,
                         modifier = Modifier.padding(10.dp)
                     )
                     Row {
                         Button(onClick = {
-                            viewModel.changeUserName()
+                            Log.d("USERNAME-EDIT", "유저네임 변경 요청 송신... 새 유저네임: ${changedUserName}")
+                            viewModel.changeUserName(changedUserName)
                             usernameEditDialogOpen = false
                         }) {
                             Text(text = "확인")
