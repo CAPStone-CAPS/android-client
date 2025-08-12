@@ -81,8 +81,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// 현재 사용하고 있는 토큰. 구현 문제로 일단 전역변수로 설정. -> AuthManager를 이용하기로.
-var currentToken: String? = null
+// 토큰 저장은 GroupScreen.kt의 AuthManager를 이용..
 var currentRefresh: String? = null
 
 /*
@@ -133,12 +132,11 @@ class LoginViewModel : ViewModel() {
             try {
                 val response = retrofitInstance.login(UserRequest(username, password))
                 if (response.isSuccessful) {
-                    currentToken = response.body()!!.data.accessToken
+                    AuthManager.authToken = response.body()!!.data.accessToken
                     currentRefresh = response.body()!!.data.refresh
                     Log.d("LOGIN", "remote Token: ${response.body()!!.data.accessToken}")
-                    Log.d("LOGIN", "currentToken: $currentToken")
+                    Log.d("LOGIN", "currentToken: ${AuthManager.authToken}")
                     // 로그인 성공 시 전역 AuthManager에 토큰 저장 (Group API 인터셉터에서 사용)
-                    AuthManager.authToken = currentToken
                     loginSuccess = true
                 } else {
                     errorMessage = "로그인 실패 (${response.code()})"
@@ -160,10 +158,9 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val loginResponse = retrofitInstance.login(UserRequest(username, password))
                     if (loginResponse.isSuccessful) {
-                        currentToken = loginResponse.body()!!.data.accessToken
+                        AuthManager.authToken = loginResponse.body()!!.data.accessToken
                         currentRefresh = loginResponse.body()!!.data.refresh
                         // 회원가입 직후 자동 로그인 성공 시 토큰 저장
-                        AuthManager.authToken = currentToken
                         loginSuccess = true
                     } else {
                         errorMessage = "회원가입에 성공했으나 로그인에 실패하였습니다. (${loginResponse.code()})"
