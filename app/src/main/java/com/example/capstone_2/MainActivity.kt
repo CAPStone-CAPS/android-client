@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         when (selectedTab) {
                             0 -> AppUsageTrackerScreen()//(context = this@MainActivity)
-                            //1 -> HistoryScreen()
+                            1 -> HistoryScreen()
                             2 -> GroupScreen()
                             3 -> LoginMypageScreen(onMoveToGroupScreen = {
                                 Log.d("MYPAGE", "GroupScreen으로 이동 시도....")
