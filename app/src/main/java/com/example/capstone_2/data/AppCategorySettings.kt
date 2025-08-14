@@ -40,8 +40,13 @@ data class AppCategorySettings (val username: String) {
         val myUsageStatsManager: UsageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val appNameSet: MutableSet<String> = mutableSetOf<String>()
 
+<<<<<<< HEAD
         val millisNow = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
             .atZone(ZoneId.of("Asia/Seoul"))
+=======
+        val millisNow = LocalDateTime.now()
+            .atZone(ZoneId.systemDefault())
+>>>>>>> 751dd7113797efac61f43c75ac2dc4796661c493
             .toInstant().toEpochMilli()
 
         val millisYesterday : Long = ((millisNow - 86400000) / 86400000) * 86400000
