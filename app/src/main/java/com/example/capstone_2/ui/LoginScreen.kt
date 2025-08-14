@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -52,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import coil3.compose.AsyncImage // Coil 라이브러리를 추가하면 자꾸 오류가 발생해서 일단 비활성화.
@@ -84,6 +87,10 @@ class MainActivity : ComponentActivity() {
 // 토큰 저장은 GroupScreen.kt의 AuthManager를 이용..
 var currentRefresh: String? = null
 
+val loggedInUser = mutableMapOf<String, String>(
+    "id" to "0", "username" to "testuser"
+)
+
 /*
 * 랜딩 페이지가 없으므로, 로그인 상태라면 마이페이지, 그렇지 않으면 로그인 페이지가 나오도록 한다.
 * */
@@ -114,8 +121,8 @@ fun LoginMypageScreen(modifier: Modifier = Modifier, onMoveToGroupScreen: () -> 
     }
 }
 
-class LoginViewModel : ViewModel() {
-    var retrofitInstance = RetrofitInstance.getRetrofitInstance().create(LoginService::class.java)
+class LoginViewModel(app: Application) : AndroidViewModel(app) {
+    var retrofitInstance = RetrofitInstance.get(getApplication()).create(LoginService::class.java)
 
     var username by mutableStateOf("")
     var password by mutableStateOf("")
@@ -278,8 +285,8 @@ fun LoginScreen(
     }
 }
 
-class MyPageViewModel : ViewModel() {
-    var retrofitInstance = RetrofitInstance.getRetrofitInstance().create(LoginService::class.java)
+class MyPageViewModel(app: Application) : AndroidViewModel(app) {
+    var retrofitInstance = RetrofitInstance.get(getApplication()).create(LoginService::class.java)
 
     var username by mutableStateOf("")
     var newUsername by mutableStateOf("")
@@ -304,6 +311,10 @@ class MyPageViewModel : ViewModel() {
                     } else {
                         profileimageExists = false
                     }
+
+                    loggedInUser.put("id", response.body()!!.data.id.toString())
+                    loggedInUser.put("username", response.body()!!.data.username)
+
                 } else {
                     Log.e("GETUSER", "요청 실패: ${response.code()}")
                 }
@@ -559,21 +570,16 @@ fun MyPageScreen(onAppSettingsOpen: () -> Unit, onLogout: () -> Unit, onMoveToGr
 // 앱별 설정은 추후 개선 예정으로 남겨둔다.
 @Composable
 fun AppSettingsScreen(onAppSettingsClose: () -> Unit) {
-    val LoggedInUser = mapOf<String, String>(
-        "id" to "0", "username" to "testuser"
-    )
-    val currentappCategorySettings = AppCategorySettings(LoggedInUser.getValue("username"))
+
+    val currentappCategorySettings = AppCategorySettings(loggedInUser.getValue("username"))
     var currentAppNameList: Array<String>
 
     // 사용 기록에서 앱 이름만 가져와서 key로 사용 예정. 일단 임시로 테스트용 데이터를 넣어둠.
-    currentappCategorySettings.addApp("App1")
-    currentappCategorySettings.addApp("App2")
-    currentappCategorySettings.addApp("App3")
-    currentappCategorySettings.addApp("App4")
-    currentappCategorySettings.addApp("App5")
+    currentappCategorySettings.getAppListFromUsageStats(context = LocalContext.current)
 
     currentAppNameList = currentappCategorySettings.getAppNameSet().toTypedArray()
     var numApps = currentAppNameList.size
+    Log.d("APP-CAT-SCREEN", "현재 인식된 앱 개수: ${numApps}")
 
     Column(modifier = Modifier){
         Row(modifier = Modifier){
@@ -621,8 +627,9 @@ fun SettingRow(appName: String, currentState: Int, onSettingUpdate: (String, Int
 
         Box(
             modifier = Modifier.padding(16.dp)
+                .align(Alignment.Top)
         ) {
-            Row(){
+            Row(modifier = Modifier.align(Alignment.TopEnd)){
                 Text(text = currentCategory)
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "카테고리 보기 버튼")

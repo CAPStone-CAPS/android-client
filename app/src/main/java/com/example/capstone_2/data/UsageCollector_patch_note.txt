@@ -1,0 +1,11 @@
+Change in UsageCollector.kt:
+Replace direct api.recordUsage(...) call with UsageUploader.safeRecord(...)
+
+Before:
+    val res = api.recordUsage(body)
+    if (res.isSuccessful) ok++
+    else Log.e(TAG, "업로드 실패 ${res.code()} for ${s.packageName}")
+
+After:
+    if (UsageUploader.safeRecord(context, body)) ok++
+    else Log.e(TAG, "업로드 실패 for ${s.packageName} (404-resilient tried multiple paths)")

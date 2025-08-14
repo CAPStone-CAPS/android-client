@@ -9,11 +9,11 @@ import java.time.ZoneId
 
 fun UsageSessionEntity.getLifestyleDate(): LocalDate {
     val time = Instant.ofEpochMilli(this.startTime)
-        .atZone(ZoneId.systemDefault())
+        .atZone(ZoneId.of("Asia/Seoul"))
         .toLocalTime()
 
     val date = Instant.ofEpochMilli(this.startTime)
-        .atZone(ZoneId.systemDefault())
+        .atZone(ZoneId.of("Asia/Seoul"))
         .toLocalDate()
 
     return if (time < LocalTime.of(6, 0)) date.minusDays(1) else date
@@ -21,7 +21,7 @@ fun UsageSessionEntity.getLifestyleDate(): LocalDate {
 
 
 fun UsageSessionEntity.getLifestyleEndDate(): LocalDate {
-    val time = Instant.ofEpochMilli(this.endTime).atZone(ZoneId.systemDefault()).toLocalTime()
-    val date = Instant.ofEpochMilli(this.endTime).atZone(ZoneId.systemDefault()).toLocalDate()
+    val time = Instant.ofEpochMilli(this.endTime).atZone(ZoneId.of("Asia/Seoul")).toLocalTime()
+    val date = Instant.ofEpochMilli(this.endTime).atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
     return if (time < LocalTime.of(6, 0)) date.minusDays(1) else date
 }

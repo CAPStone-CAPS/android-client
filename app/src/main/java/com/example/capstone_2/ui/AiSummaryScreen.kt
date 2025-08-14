@@ -1,138 +1,121 @@
-
 package com.example.capstone_2.ui
+import java.time.ZoneId
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.Response
-
-// ---------- Retrofit 관련 ----------
-data class AiSummaryResponse(
-    val message: String,
-    val data: AiSummaryData?
-)
-
-data class AiSummaryData(
-    val message: String,
-    val date: String
-)
-
-interface UsageApiService {
-    @GET("/api/summary")
-    suspend fun getAiSummary(): Response<AiSummaryResponse>
-}
-
-object ApiClient {
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("http://211.188.51.35")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val usageApi: UsageApiService = retrofit.create(UsageApiService::class.java)
-}
-
-// ---------- Composable UI ----------
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.capstone_2.ui.ai.AiSummaryUiState
+import com.example.capstone_2.ui.ai.AiSummaryViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import java.time.format.TextStyle
 
 @Composable
-fun AiSummaryScreen() {
-    var summaryText by remember { mutableStateOf<String?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-    var isError by remember { mutableStateOf(false) }
+fun AiSummaryScreen(vm: AiSummaryViewModel = viewModel()) {
+    val state by vm.ui.collectAsState()
 
-    val scope = rememberCoroutineScope()
+    val today = LocalDate.now(ZoneId.of("Asia/Seoul"))
+    val dayName = today.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN)
+    val dateStr = today.format(DateTimeFormatter.ofPattern("M월 d일")) + " (" + dayName + ")"
 
-    LaunchedEffect(Unit) {
-        scope.launch {
-            try {
-                Log.d("AI_SUMMARY", "요약 요청 시작")
-                val response = ApiClient.usageApi.getAiSummary()
-                Log.d("AI_SUMMARY", "응답 성공 여부: ${response.isSuccessful}")
-                if (response.isSuccessful) {
-                    summaryText = response.body()?.data?.message
-                } else {
-                    isError = true
-                }
-            } catch (e: Exception) {
-                isError = true
-                Log.e("AI_SUMMARY", "요약 호출 실패", e)
-            } finally {
-                isLoading = false
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F7FB))
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(imageVector = Icons.Filled.AutoAwesome, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "AI 요약",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
+            Spacer(Modifier.weight(1f))
+            TextButton(onClick = { vm.refresh() }) { Text("새로고침") }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Surface(shape = RoundedCornerShape(999.dp), color = Color(0xFFEAEFFF)) {
+            Text(
+                text = dateStr,
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                fontSize = 13.sp,
+                color = Color(0xFF3D5AFE)
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        when (state) {
+            is AiSummaryUiState.Loading -> SummarySkeleton()
+            is AiSummaryUiState.Success -> SummaryCard((state as AiSummaryUiState.Success).text)
+            is AiSummaryUiState.Error -> {
+                val s = state as AiSummaryUiState.Error
+                SummaryCard(s.fallback, errorBanner = s.reason)
             }
         }
     }
+}
 
-    Box(
+@Composable
+private fun SummarySkeleton() {
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF6F9FC))
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(20.dp)
     ) {
-        when {
-            isLoading -> CircularProgressIndicator(color = Color(0xFF4A90E2))
-            isError -> Text(
-                text = "AI 요약을 불러오는 데 실패했어요.",
-                color = Color.Red,
-                fontSize = 16.sp
+        repeat(5) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(14.dp)
+                    .padding(vertical = 8.dp)
+                    .background(Color(0xFFE9ECF7), RoundedCornerShape(8.dp))
             )
-            summaryText != null -> AiSummaryCard(summaryText!!)
-            else -> Text("요약 결과가 없습니다.")
         }
     }
 }
 
 @Composable
-fun AiSummaryCard(message: String) {
+private fun SummaryCard(message: String, errorBanner: String? = null) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(20.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.AutoAwesome,
-            contentDescription = "AI Summary",
-            tint = Color(0xFF4A90E2),
-            modifier = Modifier.size(64.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "AI 요약",
-            fontSize = 24.sp,
-            color = Color(0xFF333333)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Text(
-                text = message,
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                fontSize = 16.sp,
-                color = Color(0xFF444444)
-            )
+        if (!errorBanner.isNullOrBlank()) {
+            Surface(color = Color(0xFFFFF3F0), shape = RoundedCornerShape(12.dp)) {
+                Text(
+                    text = "서버 오류로 임시 요약을 보여줘요: " + errorBanner,
+                    modifier = Modifier.padding(12.dp),
+                    color = Color(0xFFCC3A2B),
+                    fontSize = 12.sp
+                )
+            }
+            Spacer(Modifier.height(8.dp))
         }
+        Text(text = message, fontSize = 16.sp, color = Color(0xFF2B2B2B), lineHeight = 22.sp)
     }
 }

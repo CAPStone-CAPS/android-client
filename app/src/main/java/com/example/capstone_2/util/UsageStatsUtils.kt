@@ -40,9 +40,9 @@ data class UsageSession(
 
 fun getDetailedUsageInfoPerApp(context: Context, date: LocalDate): List<AppUsageInfo> {
     val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-    val zoneId = ZoneId.systemDefault()
+    val zoneId = ZoneId.of("Asia/Seoul")
     val startTime = date.atStartOfDay(zoneId).toInstant().toEpochMilli()
-    val endTime = if (date == LocalDate.now()) System.currentTimeMillis()
+    val endTime = if (date == LocalDate.now(ZoneId.of("Asia/Seoul"))) System.currentTimeMillis()
     else date.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
 
     val usageEvents = usageStatsManager.queryEvents(startTime, endTime)
@@ -121,7 +121,7 @@ fun convertEventsToBlockEntries(
     val appColorMap = generateAppColorMap(emptyList())
 
     val result = mutableListOf<BlockUsageEntry>()
-    val zoneId = ZoneId.systemDefault()
+    val zoneId = ZoneId.of("Asia/Seoul")
     val startOfDay = date.atStartOfDay(zoneId).toInstant().toEpochMilli()
     val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
     val interval = 10 * 60 * 1000L
@@ -181,7 +181,7 @@ fun getAppUsageSessions(context: Context, date: LocalDate): List<UsageSession> {
     val usageStatsManager =
         context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
 
-    val zoneId = ZoneId.systemDefault()
+    val zoneId = ZoneId.of("Asia/Seoul")
     val startTime = date.atStartOfDay(zoneId).toInstant().toEpochMilli()
     val endTime = date.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
 
@@ -231,7 +231,7 @@ fun convertSessionToTimeGridMatrix(sessions: List<UsageSessionEntity>, selectedD
             val blocks = mutableSetOf<String>()
             var current = start
             while (current < end) {
-                val minuteOfDay = Date(current).toInstant().atZone(ZoneId.systemDefault()).toLocalTime().toSecondOfDay() / 60
+                val minuteOfDay = Date(current).toInstant().atZone(ZoneId.of("Asia/Seoul")).toLocalTime().toSecondOfDay() / 60
                 val blockIndex = (minuteOfDay - 360) / 10
                 if (blockIndex in 0..143) {
                     blocks.add(blockIndex.toString())
