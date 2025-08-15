@@ -1,4 +1,5 @@
 package com.example.capstone_2.ui.history
+import java.time.ZoneId
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,7 +59,7 @@ fun HistoryScreen(
     showTopBar: Boolean = false
 ) {
     var selectedTab by remember { mutableStateOf(0) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedDate by remember { mutableStateOf(LocalDate.now(ZoneId.of("Asia/Seoul"))) }
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
     val sampleData = remember { getSampleData() }
@@ -218,8 +219,8 @@ fun CalendarSection(
             ) {
                 items(days) { date ->
                     val isSelected = date == selectedDate
-                    val isToday = date == LocalDate.now()
-                    val isFuture = date != null && date.isAfter(LocalDate.now())
+                    val isToday = date == LocalDate.now(ZoneId.of("Asia/Seoul"))
+                    val isFuture = date != null && date.isAfter(LocalDate.now(ZoneId.of("Asia/Seoul")))
                     val hasData = date != null && usageData.containsKey(date)
 
                     Box(
@@ -259,7 +260,7 @@ fun CalendarSection(
 
 @Composable
 fun DayDetailsSection(dayData: DayUsageData) {
-    val isToday = dayData.date == LocalDate.now()
+    val isToday = dayData.date == LocalDate.now(ZoneId.of("Asia/Seoul"))
 
     Card(
         modifier = Modifier.fillMaxWidth(),

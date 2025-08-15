@@ -53,7 +53,7 @@ fun AppUsageTrackerScreen() {
     val usageInfoState = remember { mutableStateOf<List<AppUsageInfo>>(emptyList()) }
     val totalTimeState = remember { mutableStateOf(0L) }
     var selectedTab by remember { mutableStateOf(0) }
-    val selectedDate = remember { mutableStateOf(LocalDate.now()) }
+    val selectedDate = remember { mutableStateOf(LocalDate.now(ZoneId.of("Asia/Seoul"))) }
     val timeGridState = remember { mutableStateOf(BooleanArray(144) { false }) }
     val appUsageBlocksState = remember { mutableStateOf<List<AppTimeBlock>>(emptyList()) }
     val memoViewModel: MemoViewModel = viewModel()
@@ -66,7 +66,7 @@ fun AppUsageTrackerScreen() {
         Log.d("APP_DEBUG", "권한 상태: $hasPermission")
 
         if (hasPermission) {
-            val sessionList = getAppUsageSessions(context, LocalDate.now())
+            val sessionList = getAppUsageSessions(context, LocalDate.now(ZoneId.of("Asia/Seoul")))
 
             dao.insertSessions(
                 sessionList.map {

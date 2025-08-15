@@ -92,11 +92,7 @@ dependencies {
     // ViewModel, LiveData
     val lifecycleVersion = "2.9.2"
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
-/*
-    // Coil
-    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
-*/
+
     // 디버그용
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
@@ -109,11 +105,13 @@ dependencies {
     implementation("androidx.room:room-ktx:2.7.2")
 
     //retorifit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
 
     // (필요 시 OkHttp 로깅)
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
+
 }
 
 kapt {

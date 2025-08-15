@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 // import coil3.compose.AsyncImage // Coil 라이브러리를 추가하면 자꾸 오류가 발생해서 일단 비활성화.
@@ -119,8 +121,8 @@ fun LoginMypageScreen(modifier: Modifier = Modifier, onMoveToGroupScreen: () -> 
     }
 }
 
-class LoginViewModel : ViewModel() {
-    var retrofitInstance = RetrofitInstance.getRetrofitInstance().create(LoginService::class.java)
+class LoginViewModel(app: Application) : AndroidViewModel(app) {
+    var retrofitInstance = RetrofitInstance.get(getApplication()).create(LoginService::class.java)
 
     var username by mutableStateOf("")
     var password by mutableStateOf("")
@@ -283,8 +285,8 @@ fun LoginScreen(
     }
 }
 
-class MyPageViewModel : ViewModel() {
-    var retrofitInstance = RetrofitInstance.getRetrofitInstance().create(LoginService::class.java)
+class MyPageViewModel(app: Application) : AndroidViewModel(app) {
+    var retrofitInstance = RetrofitInstance.get(getApplication()).create(LoginService::class.java)
 
     var username by mutableStateOf("")
     var newUsername by mutableStateOf("")
